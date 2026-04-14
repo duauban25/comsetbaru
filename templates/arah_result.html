@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+
+{% block title %}Arah Sukses - {{ name|default('Hasil Perhitungan') }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .direction-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .direction-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .direction-card h3 {
+        color: #2d3748;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .best-direction {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        margin: 1.5rem 0;
+        text-align: center;
+    }
+    .best-direction h3 {
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 0 1rem 0;
+        border: none;
+    }
+    .direction-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0.5rem 0;
+    }
+    .score-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        background-color: rgba(255, 255, 255, 0.2);
+        font-size: 1rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    .direction-description {
+        color: #4a5568;
+        line-height: 1.7;
+        font-size: 1.05rem;
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background-color: #f8fafc;
+        border-radius: 0.5rem;
+        border-right: 4px solid #4f46e5;
+    }
+    .steps-container {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background-color: #f8fafc;
+        border-radius: 0.5rem;
+        font-family: 'Fira Code', 'Courier New', monospace;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .step {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        background-color: white;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    .direction-scores {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    .direction-score {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        transition: all 0.2s ease;
+    }
+    .direction-score:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .direction-score.is-best {
+        border-color: #4f46e5;
+        background-color: #f0f4ff;
+    }
+    .direction-name {
+        font-weight: 500;
+        color: #4a5568;
+    }
+    .direction-number {
+        font-weight: 700;
+        color: #4f46e5;
+    }
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.625rem 1.25rem;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        transition: all 0.2s ease;
+    }
+    .btn-primary {
+        background-color: #4f46e5;
+        color: white;
+    }
+    .btn-primary:hover {
+        background-color: #4338ca;
+    }
+    .btn-secondary {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
+    .btn-secondary:hover {
+        background-color: #d1d5db;
+    }
+    .btn-icon {
+        margin-right: 0.5rem;
+    }
+    .user-info {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        border-radius: 0.5rem;
+        border-left: 4px solid #4f46e5;
+    }
+    .user-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
+    }
+    .user-dob {
+        color: #6b7280;
+        font-size: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Arah Sukses</h1>
+            {% if name and birth_date %}
+                <div class="user-info">
+                    <p class="user-name">{{ name }}</p>
+                    <p class="user-dob">Tanggal Lahir: {{ birth_date }}</p>
+                </div>
+            {% else %}
+                <p class="text-red-600">Data tidak lengkap. Silakan isi form terlebih dahulu.</p>
+            {% endif %}
+        </div>
+        
+        {% if not result %}
+            <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-8">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-red-800">Tidak Dapat Menampilkan Hasil</h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <p>Data yang diberikan tidak valid atau terjadi kesalahan dalam perhitungan.</p>
+                        </div>
+                        <div class="mt-4">
+                            <a href="{{ url_for('input_data') }}" class="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200">
+                                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Coba Lagi
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <!-- Arah Sukses Utama -->
+            <div class="direction-card">
+                <!-- Informasi Diri -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Informasi Diri</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                            <p class="text-sm text-gray-500 mb-1">Nama</p>
+                            <p class="text-lg font-semibold text-gray-800">{{ name }}</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                            <p class="text-sm text-gray-500 mb-1">Tanggal Lahir</p>
+                            <p class="text-lg font-semibold text-gray-800">{{ birth_date }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Angka Dasar (A-H) -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-3">Angka Dasar</h3>
+                    <div class="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                        {% for key in 'ABCDEFGH' %}
+                            {% if result.values[key] is defined %}
+                            <div class="bg-white p-3 rounded-lg border border-gray-200 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <div class="text-sm text-indigo-600 font-medium">{{ key }}</div>
+                                <div class="text-xl font-bold text-gray-800">{{ result.values[key] }}</div>
+                                <div class="text-xs text-gray-500 mt-1">
+                                    {% if key == 'A' %}Hari Puluhan{% endif %}
+                                    {% if key == 'B' %}Hari Satuan{% endif %}
+                                    {% if key == 'C' %}Bulan Puluhan{% endif %}
+                                    {% if key == 'D' %}Bulan Satuan{% endif %}
+                                    {% if key == 'E' %}Tahun Ribuan{% endif %}
+                                    {% if key == 'F' %}Tahun Ratusan{% endif %}
+                                    {% if key == 'G' %}Tahun Puluhan{% endif %}
+                                    {% if key == 'H' %}Tahun Satuan{% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Angka Hasil Perhitungan (I-Z) -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-3">Angka Hasil Perhitungan</h3>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                        {% for key in 'IJKLMNOPQRSTUVWXYZ' %}
+                            {% if result.values[key] is defined %}
+                            <div class="bg-white p-2 rounded-lg border border-gray-200 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <div class="text-xs text-indigo-600 font-medium">{{ key }}</div>
+                                <div class="text-lg font-bold text-gray-800">{{ result.values[key] }}</div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Arah Sukses Utama -->
+                <div class="best-direction mb-8">
+                    <h3 class="text-xl font-semibold text-white mb-2">Arah Sukses Utama</h3>
+                    <div class="direction-value text-4xl md:text-5xl font-extrabold mb-2">{{ result.best_direction }}</div>
+                    <span class="score-badge bg-white bg-opacity-20 text-white text-sm font-semibold px-3 py-1 rounded-full">
+                        Skor: {{ result.best_score }}
+                    </span>
+                    
+                    {% if result.deskripsi %}
+                    <div class="mt-4 p-4 bg-white bg-opacity-10 rounded-lg">
+                        <h4 class="font-semibold text-white mb-2">Deskripsi Arah {{ result.best_direction }}:</h4>
+                        <p class="text-white text-opacity-90">{{ result.deskripsi }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Detail Skor Arah -->
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Detail Skor Arah</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {% for direction in result.direction_scores %}
+                            {% set direction_name = direction.name %}
+                            <div class="direction-score {% if direction_name == result.best_direction %}is-best bg-indigo-50 border-indigo-200{% else %}bg-white border-gray-200{% endif %} border rounded-lg p-4 flex justify-between items-center shadow-sm hover:shadow-md transition-shadow">
+                                <span class="direction-name font-medium {% if direction_name == result.best_direction %}text-indigo-800{% else %}text-gray-700{% endif %}">
+                                    {{ direction_name }}
+                                </span>
+                                <span class="direction-number text-lg font-bold {% if direction_name == result.best_direction %}text-indigo-600{% else %}text-gray-600{% endif %}">
+                                    {{ direction.score }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <h2>Arah Sukses Anda</h2>
+                <div class="best-direction">
+                    <h3>Arah Terbaik untuk Kesuksesan</h3>
+                    <div class="direction-value">{{ result.best_direction }}</div>
+                    <span class="score-badge">Skor: {{ result.best_score }}</span>
+                </div>
+                
+                {% if result.deskripsi %}
+                <div class="direction-description">
+                    {{ result.deskripsi|safe }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Skor Semua Arah -->
+            <div class="direction-card">
+                <h3>Skor Semua Arah</h3>
+            </div>
+
+            <!-- Langkah-langkah Perhitungan -->
+            <div class="direction-card mt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-700">Langkah-langkah Perhitungan</h3>
+                    <button onclick="toggleSteps()" class="text-sm text-indigo-600 hover:text-indigo-800 flex items-center">
+                        <span id="toggleText">Sembunyikan Detail</span>
+                        <svg id="toggleIcon" class="w-4 h-4 ml-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="stepsContainer" class="steps-container bg-gray-50 p-4 rounded-lg border border-gray-200 overflow-y-auto" style="max-height: 400px;">
+                    {% if result.steps %}
+                        {% for step in result.steps %}
+                            <div class="step bg-white p-3 mb-2 rounded border border-gray-100 shadow-sm">
+                                {% if '=' in step %}
+                                    {% set parts = step.split('=') %}
+                                    <span class="text-gray-700">{{ parts[0] }}=</span>
+                                    <span class="font-semibold text-indigo-600">{{ parts[1] if parts|length > 1 else '' }}</span>
+                                {% else %}
+                                    <span class="font-semibold text-gray-800">{{ step }}</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-gray-500 text-center py-4">Tidak ada detail perhitungan yang tersedia.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <script>
+                function toggleSteps() {
+                    const container = document.getElementById('stepsContainer');
+                    const toggleText = document.getElementById('toggleText');
+                    const toggleIcon = document.getElementById('toggleIcon');
+                    
+                    if (container.classList.contains('hidden')) {
+                        container.classList.remove('hidden');
+                        toggleText.textContent = 'Sembunyikan Detail';
+                        toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />';
+                    } else {
+                        container.classList.add('hidden');
+                        toggleText.textContent = 'Tampilkan Detail';
+                        toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />';
+                    }
+                }
+            </script>
+        {% endif %}
+
+        <!-- Tombol Aksi -->
+        <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+            <a href="{{ url_for('input_data') }}" class="btn btn-secondary">
+                <svg class="btn-icon h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Hitung Lagi
+            </a>
+            <a href="{{ url_for('calculation_options') }}" class="btn btn-primary">
+                <svg class="btn-icon h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                Kembali ke Beranda
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

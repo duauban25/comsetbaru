@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Perhitungan Karma{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <div class="text-center mb-10">
+    <h1 class="text-3xl font-bold text-gray-900">Hasil Perhitungan Karma</h1>
+    <p class="text-gray-600">Berdasarkan nilai nama Anda</p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow p-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-semibold text-gray-900">{{ name }}</h2>
+        <p class="text-gray-600">Tanggal Lahir: {{ birth_date }}</p>
+      </div>
+      <span class="mt-4 md:mt-0 inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-red-100 text-red-800">Angka Karma: {{ number }}</span>
+    </div>
+
+    <div class="space-y-8">
+      <div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">Deskripsi</h3>
+        <p class="text-gray-700">{{ deskripsi }}</p>
+      </div>
+
+      {# Kekuatan section intentionally hidden per request #}
+      {# Tantangan section intentionally hidden per request #}
+
+      {% if saran %}
+      <div class="border-t pt-6">
+        <h3 class="text-xl font-semibold text-indigo-800 mb-2">Saran</h3>
+        <p class="text-gray-700">{{ saran }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="mt-10 flex gap-3">
+      <a href="{{ url_for('login') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">Ubah Data</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

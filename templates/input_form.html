@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Data - Numerologi</title>
+    <!-- Local Tailwind CSS with onerror-only CDN fallback (pinned version) -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/tailwind.css') }}?v=1"
+          id="tw-local"
+          onload="window.__tw_local_loaded=true"
+          onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tailwindcss@3.4.0';s.onload=function(){window.__tw_cdn_loaded=true;var l=document.getElementById('tw-local');if(l){l.disabled=true;}};document.head.appendChild(s);})()">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="min-h-screen flex items-center justify-center px-4">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Masukkan Data Diri</h1>
+                <p class="text-gray-600">Silakan isi form berikut untuk memulai perhitungan numerologi</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden p-8">
+                <form action="{{ url_for('input_data') }}" method="POST" class="space-y-6">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    
+                    <!-- Nama Lengkap -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+                            Nama Lengkap
+                        </label>
+                        <input type="text" id="name" name="name" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Contoh: Budi Santoso">
+                    </div>
+
+                    <!-- Tanggal Lahir -->
+                    <div>
+                        <label for="birth_date" class="block text-sm font-medium text-gray-700 mb-1">
+                            Tanggal Lahir
+                        </label>
+                        <input type="date" id="birth_date" name="birth_date" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <p class="mt-1 text-xs text-gray-500">Format: DD/MM/YYYY</p>
+                    </div>
+
+                    <!-- Tombol Submit -->
+                    <div class="pt-2">
+                        <button type="submit" 
+                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Lanjutkan
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Data Anda akan digunakan untuk perhitungan numerologi yang akurat
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

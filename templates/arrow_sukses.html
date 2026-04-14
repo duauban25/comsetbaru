@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Arrow Sukses{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <div class="text-center mb-12">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Arrow Sukses</h1>
+    <p class="text-lg text-gray-600">Analisa pola panah kesuksesan dalam numerologi</p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="p-8">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <div>
+          <h2 class="text-2xl font-semibold text-gray-900">{{ name }}</h2>
+          <p class="text-gray-600">Tanggal Lahir: {{ birth_date }}</p>
+        </div>
+      </div>
+
+      <div class="border-t pt-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Birth Chart (DDMMYYYY → 3x3)</h3>
+        <div class="grid grid-cols-4 gap-2 max-w-md mx-auto mb-6">
+          <!-- Header Row -->
+          <div></div>
+          <div class="text-center font-medium text-gray-700 text-sm">Self</div>
+          <div class="text-center font-medium text-gray-700 text-sm">Community</div>
+          <div class="text-center font-medium text-gray-700 text-sm">World</div>
+
+          <!-- Mind Row (3,6,9) -->
+          <div class="text-center font-medium text-gray-700 text-sm bg-blue-50 p-2 rounded">Mind</div>
+          <div class="bg-blue-100 p-4 rounded text-center">
+            <div class="text-2xl font-bold text-blue-800">{{ birth_chart_strings.mind_self_str if birth_chart_strings else '' }}</div>
+            <div class="text-xs text-blue-600">3</div>
+          </div>
+          <div class="bg-blue-100 p-4 rounded text-center">
+            <div class="text-2xl font-bold text-blue-800">{{ birth_chart_strings.mind_community_str if birth_chart_strings else '' }}</div>
+            <div class="text-xs text-blue-600">6</div>
+          </div>
+          <div class="bg-blue-100 p-4 rounded text-center">
+            <div class="text-2xl font-bold text-blue-800">{{ birth_chart_strings.mind_world_str if birth_chart_strings else '' }}</div>
+            <div class="text-xs text-blue-600">9</div>
+          </div>
+
+          <!-- Soul Row (2,5,8) -->
+          <div class="text-center font-medium text-gray-700 text-sm bg-green-50 p-2 rounded">Soul</div>
+          <div class="bg-green-100 p-4 rounded text-center">
+            <div class="text-2xl font-bold text-green-800">{{ birth_chart_strings.soul_self_str if birth_chart_strings else '' }}</div>
+            <div class="text-xs text-green-600">2</div>
+          </div>
+          <div class="bg-green-100 p-4 rounded text-center">
+            <div class="text-2xl font-bold text-green-800">{{ birth_chart_strings.soul_community_str if birth_chart_strings else '' }}</div>
+            <div class="text-xs text-green-600">5</div>
+          </div>
+          <div class="bg-green-100 p-4 rounded text-center">
+            <div class="text-2xl font-bold text-green-800">{{ birth_chart_strings.soul_world_str if birth_chart_strings else '' }}</div>
+            <div class="text-xs text-green-600">8</div>
+          </div>
+
+          <!-- Basic Self Row (1,4,7) -->
+          <div class="text-center font-medium text-gray-700 text-sm bg-orange-50 p-2 rounded">Basic Self</div>
+          <div class="bg-orange-100 p-4 rounded text-center">
+            <div class="text-2xl font-bold text-orange-800">{{ birth_chart_strings.body_self_str if birth_chart_strings else '' }}</div>
+            <div class="text-xs text-orange-600">1</div>
+          </div>
+          <div class="bg-orange-100 p-4 rounded text-center">
+            <div class="text-2xl font-bold text-orange-800">{{ birth_chart_strings.body_community_str if birth_chart_strings else '' }}</div>
+            <div class="text-xs text-orange-600">4</div>
+          </div>
+          <div class="bg-orange-100 p-4 rounded text-center">
+            <div class="text-2xl font-bold text-orange-800">{{ birth_chart_strings.body_world_str if birth_chart_strings else '' }}</div>
+            <div class="text-xs text-orange-600">7</div>
+          </div>
+        </div>
+
+        <!-- Arrows Present -->
+        {% if arrows_present %}
+        <div class="mt-8">
+          <h4 class="text-lg font-semibold text-gray-900 mb-3">Arrows Terdeteksi</h4>
+          <div class="space-y-3">
+            {% for a in arrows_present %}
+              <div class="rounded-lg border p-4 bg-white">
+                <div class="font-semibold text-gray-900 mb-1">{{ a.title }}</div>
+                <div class="text-gray-800 text-sm leading-relaxed" style="white-space: pre-line;">{{ a.deskripsi }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Arrows Absent -->
+        {% if arrows_absent %}
+        <div class="mt-8">
+          <h4 class="text-lg font-semibold text-gray-900 mb-3">Arrows Tidak Terbentuk</h4>
+          <div class="space-y-3">
+            {% for a in arrows_absent %}
+              <div class="rounded-lg border p-4 bg-white">
+                <div class="font-semibold text-gray-900 mb-1">{{ a.title }}</div>
+                <div class="text-gray-800 text-sm leading-relaxed" style="white-space: pre-line;">{{ a.deskripsi }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-8">
+    <a href="{{ url_for('show_cards') }}" class="inline-flex items-center px-6 py-3 rounded-md text-white bg-blue-600 hover:bg-blue-700">Kembali ke Menu</a>
+  </div>
+</div>
+{% endblock %}

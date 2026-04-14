@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Hutang Karma - Numerologi{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Back Button -->
+    <div class="mb-6">
+        <a href="{{ url_for('calculation_options') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Kembali ke Pilihan Perhitungan
+        </a>
+    </div>
+
+    <!-- Result Card -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-red-500 to-red-600 p-6 text-white">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">Hasil Perhitungan Hutang Karma</h1>
+                    <p class="text-red-100">Analisis hutang karma berdasarkan nama dan tanggal lahir</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <span class="inline-block bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">
+                        {{ name }} - {{ birth_date }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6 md:p-8">
+            <!-- Note: Removed name-based Karmic Lesson section to focus on birthdate-based Karmic Debt only -->
+
+            <!-- Karmic Debt Overview -->
+            <div class="bg-white rounded-xl p-6 mb-8 border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Karmic Debt Detection</h3>
+                
+                <!-- Birthdate-based Karmic Debt -->
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-700 mb-3">Berdasarkan Tanggal Lahir</h4>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        {% if life_path_karmic_debt and life_path_karmic_debt.has_karmic_debt %}
+                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mx-auto mb-2">
+                                <span class="text-2xl font-extrabold text-red-700">{{ life_path_karmic_debt.debt_double }}</span>
+                            </div>
+                            <p class="text-sm text-red-700 font-medium">Terindikasi Karmic Debt</p>
+                            {% if calculation and calculation.life_path_precursor %}
+                            <p class="text-xs text-gray-500 mt-1">Prekursor: {{ calculation.life_path_precursor }}</p>
+                            {% endif %}
+                            {% if karmic_debt_description %}
+                            <p class="mt-2 text-xs text-gray-700 text-left">{{ karmic_debt_description }}</p>
+                            {% endif %}
+                        {% else %}
+                            <p class="text-sm text-gray-600">Tidak terdeteksi Karmic Debt dari Life Path.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Name-based Karmic Debt -->
+                <div>
+                    <h4 class="text-md font-medium text-gray-700 mb-3">Berdasarkan Nama</h4>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        {% if name_number_karmic_debt and name_number_karmic_debt.has_karmic_debt %}
+                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mx-auto mb-2">
+                                <span class="text-2xl font-extrabold text-blue-700">{{ name_number_karmic_debt.debt_double }}</span>
+                            </div>
+                            <p class="text-sm text-blue-700 font-medium">Terindikasi Karmic Debt</p>
+                            <p class="text-xs text-gray-500 mt-1">Prekursor: {{ name_number_karmic_debt.precursor }}</p>
+                            {% if name_karmic_debt_description %}
+                            <p class="mt-2 text-xs text-gray-700 text-left">{{ name_karmic_debt_description }}</p>
+                            {% endif %}
+                        {% else %}
+                            <p class="text-sm text-gray-600">Tidak terdeteksi Karmic Debt dari Name Number.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Informasi Tambahan</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <h4 class="font-medium text-gray-600 mb-1">Life Path Number</h4>
+                        <p class="text-xl font-semibold text-blue-600">{{ life_path }}</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <h4 class="font-medium text-gray-600 mb-1">Name Number</h4>
+                        <p class="text-xl font-semibold text-blue-600">{{ name_number }}</p>
+                    </div>
+                </div>
+                
+                {% if calculation %}
+                <div class="mt-6">
+                    <h4 class="font-medium text-gray-600 mb-2">Detail Perhitungan:</h4>
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <p class="text-gray-700">
+                            Tanggal Lahir: {{ calculation.day }} + {{ calculation.month }} + {{ calculation.year }}<br>
+                            Nama: {{ calculation.name_sum }}<br>
+                            Total: {{ calculation.day + calculation.month + calculation.year }} + {{ calculation.name_sum }} = {{ calculation.total_sum }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="flex flex-col sm:flex-row justify-between gap-4 mt-8">
+        <a href="{{ url_for('login') }}" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium text-center transition-colors">
+            Ubah Data / Login
+        </a>
+        <a href="{{ url_for('login') }}" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-center transition-colors">
+            Kembali ke Login
+        </a>
+    </div>
+</div>
+{% endblock %}

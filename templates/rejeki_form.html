@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Rejeki - Numerologi{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">Analisis Rejeki Anda</h1>
+        <p class="text-lg text-gray-600">Temukan potensi rejeki dan kekayaan dalam hidup Anda</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden p-8 mb-8">
+        <form id="rejekiForm" method="POST" action="{{ url_for('rejeki_result') }}" class="space-y-6">
+            {{ form.hidden_tag() }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="name" name="name" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                           placeholder="Masukkan nama lengkap Anda">
+                </div>
+                <div>
+                    <label for="birth_date" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
+                    <input type="date" id="birth_date" name="birth_date" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" 
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Analisis Rejeki
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-green-50 rounded-lg p-6 mb-8">
+        <h3 class="text-xl font-semibold text-green-800 mb-3">Apa itu Analisis Rejeki?</h3>
+        <p class="text-gray-700 mb-4">
+            Analisis Rejeki dalam numerologi membantu Anda memahami potensi kekayaan dan aliran rejeki 
+            dalam hidup Anda berdasarkan nama dan tanggal lahir. Angka rejeki dapat menunjukkan 
+            bagaimana Anda menarik dan mengelola energi finansial.
+        </p>
+        <p class="text-gray-700">
+            Dengan memahami angka rejeki Anda, Anda dapat mengoptimalkan potensi finansial 
+            dan menemukan cara terbaik untuk meningkatkan kemakmuran hidup Anda.
+        </p>
+    </div>
+</div>
+{% endblock %}

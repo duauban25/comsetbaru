@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Weton - Numerologi{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8 sm:py-12">
+    
+
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-3">Perhitungan Weton Jawa</h1>
+        <p class="text-lg text-gray-600">Temukan weton dan neptu kelahiran Anda</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+        <div class="p-6 sm:p-8">
+            <form id="wetonForm" method="GET" action="{{ url_for('weton_result') }}" class="space-y-6" novalidate>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                        <input type="text" 
+                               id="name" 
+                               name="name" 
+                               value="{{ request.args.get('name', '') }}" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition duration-200"
+                               placeholder="Contoh: Budi Santoso"
+                               required>
+                        <p class="mt-1 text-sm text-gray-500">Masukkan nama lengkap Anda</p>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="birth_date" class="block text-sm font-medium text-gray-700">Tanggal Lahir</label>
+                        <input type="date" 
+                               id="birth_date" 
+                               name="birth_date" 
+                               value="{{ request.args.get('birth_date', '') }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition duration-200"
+                               required>
+                        <p class="mt-1 text-sm text-gray-500">Format: DD/MM/YYYY atau YYYY-MM-DD</p>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" 
+                            class="w-full flex justify-center items-center py-3 px-6 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                        </svg>
+                        Hitung Weton Saya
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-yellow-50 rounded-xl p-6 border border-yellow-100">
+            <div class="flex items-center mb-4">
+                <div class="p-2 bg-yellow-100 rounded-lg mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-yellow-800">Apa itu Weton?</h3>
+            </div>
+            <p class="text-gray-700 mb-4">
+                Weton adalah perhitungan hari kelahiran dalam kalender Jawa yang terdiri dari siklus 7 hari (Senin sampai Minggu) 
+                dan siklus 5 hari pasaran (Umanis, Pahing, Pon, Wage, Kliwon).
+            </p>
+            <p class="text-gray-700">
+                Setiap kombinasi hari dan pasaran memiliki makna dan pengaruh tersendiri dalam kehidupan seseorang.
+            </p>
+        </div>
+
+        <div class="bg-blue-50 rounded-xl p-6 border border-blue-100">
+            <div class="flex items-center mb-4">
+                <div class="p-2 bg-blue-100 rounded-lg mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-blue-800">Kegunaan Weton</h3>
+            </div>
+            <ul class="space-y-2 text-gray-700">
+                <li class="flex items-start">
+                    <svg class="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Menentukan hari baik untuk hajatan atau pernikahan</span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Melihat kecocokan jodoh</span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Memperkirakan watak dan nasib</span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Menentukan hari baik untuk memulai usaha</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Format tanggal lahir untuk input type="date"
+    const birthDateInput = document.getElementById('birth_date');
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Set max date to today
+    birthDateInput.max = today;
+    
+    // Format tanggal dari query parameter jika ada
+    const urlParams = new URLSearchParams(window.location.search);
+    const dateParam = urlParams.get('birth_date');
+    
+    if (dateParam) {
+        try {
+            // Coba parsing format yang berbeda
+            let date = null;
+            
+            // Coba format YYYY-MM-DD
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+                date = new Date(dateParam);
+            } 
+            // Coba format DD/MM/YYYY
+            else if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateParam)) {
+                const [day, month, year] = dateParam.split('/');
+                date = new Date(`${year}-${month}-${day}`);
+            }
+            
+            if (date && !isNaN(date.getTime())) {
+                birthDateInput.value = date.toISOString().split('T')[0];
+            }
+        } catch (e) {
+            console.error('Error parsing date:', e);
+        }
+    }
+});
+</script>
+{% endblock %}

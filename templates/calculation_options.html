@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>Pilih Perhitungan - Numerologi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-12">
+    {# Local flash messages removed. Using global flash renderer in base.html #}
+
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Pilih Jenis Perhitungan</h1>
+        <p class="text-gray-600">Pilih jenis perhitungan numerologi yang Anda inginkan</p>
+    </div>
+
+    {% set role = current_user.role if current_user.is_authenticated else 'bronze' %}
+    {% set allow_mid = role in ['silver','gold','admin','platinum'] %}
+    {% set allow_all = role in ['gold','admin','platinum'] %}
+
+        <!-- Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Life Path Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-route text-2xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Life Path</h3>
+                    <p class="text-gray-600 text-center mb-6">Temukan jalan hidup Anda berdasarkan tanggal lahir</p>
+                    <a href="{% if session.get('form_data') %}{{ url_for('life_path_result') }}{% else %}{{ url_for('input_data') }}{% endif %}" class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Lihat Hasil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Harani Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-signature text-2xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Harani</h3>
+                    <p class="text-gray-600 text-center mb-6">Analisis nama lengkap Anda berdasarkan numerologi</p>
+                    <a href="{% if session.get('form_data') %}{{ url_for('harani_result') }}{% else %}{{ url_for('input_data') }}{% endif %}" class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Lihat Hasil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Weton Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-calendar-day text-2xl text-yellow-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Weton</h3>
+                    <p class="text-gray-600 text-center mb-6">Ketahui weton, neptu, dan penjelasan kelahiran Anda</p>
+                    <a href="{% if session.get('form_data') %}{{ url_for('weton_result') }}{% else %}{{ url_for('input_data') }}{% endif %}" class="block w-full text-center bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Lihat Hasil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Karma Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-karma text-2xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Pelajaran Karma</h3>
+                    <p class="text-gray-600 text-center mb-6">Temukan pelajaran karma dari namamu</p>
+                    {% if allow_mid %}
+                        <a href="{{ url_for('karma_result') if session.get('form_data') else url_for('input_data') }}" class="block w-full text-center bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">Lihat Hasil</a>
+                    {% else %}
+                        <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">Terkunci - Upgrade ke Silver</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Rejeki Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-coins text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Rejeki</h3>
+                    <p class="text-gray-600 text-center mb-6">Analisis potensi rejeki dan kekayaan Anda</p>
+                    {% if allow_mid %}
+                        <a href="{{ url_for('rejeki_result') if session.get('form_data') else url_for('input_data') }}" class="block w-full text-center bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">Lihat Hasil</a>
+                    {% else %}
+                        <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">Terkunci - Upgrade ke Silver</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Arah Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-compass text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Arah</h3>
+                    <p class="text-gray-600 text-center mb-6">Temukan arah keberuntungan Anda</p>
+                    {% if allow_mid %}
+                        <a href="{{ url_for('arah_result', name=session.form_data.name, birth_date=session.form_data.birth_date) if session.get('form_data') else url_for('input_data') }}" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Lihat Hasil</a>
+                    {% else %}
+                        <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">Terkunci - Upgrade ke Silver</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Hutang Karma Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-balance-scale text-2xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Hutang Karma</h3>
+                    <p class="text-gray-600 text-center mb-6">Ketahui hutang karma dari kehidupan sebelumnya</p>
+                    {% if allow_all %}
+                        <a href="{{ url_for('hutang_karma_result') if session.get('form_data') else url_for('input_data') }}" class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Lihat Hasil</a>
+                    {% else %}
+                        <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">Terkunci - Upgrade ke Gold</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Bridge Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-bridge text-2xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Bridge</h3>
+                    <p class="text-gray-600 text-center mb-6">Jembatan antara potensi dan realisasi hidup</p>
+                    {% if allow_all %}
+                        <a href="{{ url_for('bridge_result') if session.get('form_data') else url_for('input_data') }}" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Lihat Hasil</a>
+                    {% else %}
+                        <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">Terkunci - Upgrade ke Gold</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tenung Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-crystal-ball text-2xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Tenung</h3>
+                    <p class="text-gray-600 text-center mb-6">Ramalan berdasarkan Life Path Number Anda</p>
+                    {% if allow_all %}
+                        <a href="{{ url_for('tenung_result') if session.get('form_data') else url_for('input_data') }}" class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Lihat Hasil</a>
+                    {% else %}
+                        <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">Terkunci - Upgrade ke Gold</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Birth Chart Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-cake-candles text-2xl text-pink-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Birth Chart</h3>
+                    <p class="text-gray-600 text-center mb-6">Ringkasan peta kelahiran berdasarkan data Anda</p>
+                    {% if role in ['platinum','admin'] %}
+                        <a href="{{ url_for('birth_chart_result') if session.get('form_data') else url_for('input_data') }}" class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Lihat Hasil</a>
+                    {% else %}
+                        <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">Terkunci - Upgrade ke Platinum</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Arrow Sukses Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-arrow-trend-up text-2xl text-teal-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Arrow Sukses</h3>
+                    <p class="text-gray-600 text-center mb-6">Analisa pola panah kesuksesan dalam numerologi</p>
+                    {% if role in ['platinum','admin'] %}
+                        <a href="{{ url_for('arrow_sukses_result') if session.get('form_data') else url_for('input_data') }}" class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Lihat Hasil</a>
+                    {% else %}
+                        <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">Terkunci - Upgrade ke Platinum</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Name Number Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-hashtag text-2xl text-gray-700"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Name Number</h3>
+                    <p class="text-gray-600 text-center mb-6">Angka nama utama berdasarkan metode numerologi</p>
+                    {% if role in ['platinum','admin'] %}
+                        <a href="{{ url_for('name_number_result') if session.get('form_data') else url_for('input_data') }}" class="block w-full text-center bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">Lihat Hasil</a>
+                    {% else %}
+                        <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">Terkunci - Upgrade ke Platinum</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info -->
+        <div class="mt-12 bg-white rounded-xl shadow-md p-6 max-w-2xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-lg font-medium text-gray-900">Data Diri Anda</h3>
+                    <p class="text-gray-600">
+                        <span id="userName" class="font-medium">{{ name or (session.form_data.name if session.get('form_data') else '') }}</span> - 
+                        <span id="userBirthDate">{{ birth_date or (session.form_data.birth_date if session.get('form_data') else '') }}</span>
+                    </p>
+                </div>
+                <a href="{{ url_for('login') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    <i class="fas fa-edit mr-1"></i> Kembali ke Login
+                </a>
+            </div>
+        </div>
+        
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% if not current_user.is_authenticated %}
+<div id="loginModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/40" onclick="document.getElementById('loginModal').classList.add('hidden')"></div>
+  <div class="relative mx-auto mt-24 w-[90%] max-w-md bg-white rounded-lg shadow-lg p-5">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h.01a1 1 0 100-2H10V9z" clip-rule="evenodd"></path>
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-blue-700">Please log in to access this page.</p>
+      </div>
+    </div>
+    <div class="mt-4 flex justify-end gap-2">
+      <a href="{{ url_for('login') }}" class="px-3 py-2 rounded-md bg-blue-600 text-white">Login</a>
+    </div>
+  </div>
+  <span class="sr-only" tabindex="0"></span>
+  <span class="sr-only" tabindex="0"></span>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      var m = document.getElementById('loginModal');
+      if(m){ m.classList.remove('hidden'); }
+    });
+  </script>
+{% endif %}
+{% endblock %}

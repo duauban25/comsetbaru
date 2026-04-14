@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Arantologi - Kalkulator Numerologi</title>
+    <!-- Local Tailwind CSS with onerror-only CDN fallback (pinned version) -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/tailwind.css') }}?v=1"
+          id="tw-local"
+          onload="window.__tw_local_loaded=true"
+          onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tailwindcss@3.4.0';s.onload=function(){window.__tw_cdn_loaded=true;var l=document.getElementById('tw-local');if(l){l.disabled=true;}};document.head.appendChild(s);})()">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Global Print Styles -->
+    <style media="print">
+        @page {
+            margin: 1cm;
+            size: A4;
+        }
+        
+        /* Hide print buttons and navigation when using browser print (Ctrl+P) */
+        nav, .print-btn, .print-hide, .no-print {
+            display: none !important;
+        }
+        
+        /* Ensure good print layout */
+        body { 
+            font-size: 12pt; 
+            line-height: 1.4; 
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        h1, h2, h3 { 
+            page-break-after: avoid; 
+            color: #333 !important;
+        }
+        
+        .container { 
+            max-width: none !important; 
+        }
+        
+        .bg-gradient-to-r { 
+            background: #f8f9fa !important; 
+        }
+        
+        .text-white { 
+            color: #333 !important; 
+        }
+        
+        .shadow-lg, .shadow-sm { 
+            box-shadow: none !important; 
+        }
+        
+        .rounded-xl, .rounded-lg { 
+            border: 1px solid #ddd; 
+        }
+        
+        /* Fix SVG icons in print */
+        svg {
+            width: 16px !important;
+            height: 16px !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+        }
+        
+        /* Ensure icon containers don't break layout */
+        .p-2, .p-3 {
+            padding: 8px !important;
+            display: inline-block !important;
+        }
+        
+        /* Fix flex layouts for print */
+        .flex {
+            display: block !important;
+        }
+        
+        .flex.items-center {
+            display: flex !important;
+            align-items: center !important;
+        }
+        
+        /* Prevent page breaks in icon sections */
+        .flex.items-center,
+        .bg-purple-100,
+        .bg-green-100,
+        .bg-orange-100,
+        .bg-blue-100,
+        .bg-pink-100 {
+            page-break-inside: avoid !important;
+        }
+    </style>
+    
+    <script>
+        // Global back navigation helper
+        function goBack() {
+            if (window.history && window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location = "{{ url_for('input_data') }}";
+            }
+            return false;
+        }
+
+        // Add CSRF token to all AJAX requests
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get CSRF token from meta tag
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            // Add CSRF token to all forms
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                // Only add if not already present
+                if (!form.querySelector('input[name="csrf_token"]')) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrf_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                }
+            });
+            
+            // Add CSRF token to all fetch requests
+            const originalFetch = window.fetch;
+            window.fetch = function(resource, options = {}) {
+                // Add CSRF token to headers if not already set
+                if (!options.headers) {
+                    options.headers = {};
+                }
+                if (!options.headers['X-CSRFToken'] && !options.headers['x-csrf-token']) {
+                    options.headers['X-CSRFToken'] = csrfToken;
+                }
+                return originalFetch(resource, options);
+            };
+            
+            // Handle session timeout
+            document.addEventListener('ajaxError', function(event) {
+                if (event.detail.status === 419) {  // CSRF token mismatch
+                    showSessionExpiredMessage();
+                }
+            });
+            
+            // Show session expired message function
+            window.showSessionExpiredMessage = function() {
+                // Remove any existing messages
+                const existingMessages = document.querySelectorAll('.session-message');
+                existingMessages.forEach(msg => msg.remove());
+                
+                // Create and show new message
+                const message = document.createElement('div');
+                message.className = 'fixed top-4 right-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow-lg z-50 session-message';
+                message.role = 'alert';
+                message.innerHTML = `
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm">Sesi Anda telah berakhir. Silakan muat ulang halaman dan coba lagi.</p>
+                        </div>
+                        <div class="ml-4">
+                            <button type="button" class="text-yellow-500 hover:text-yellow-700 focus:outline-none" onclick="this.parentElement.parentElement.remove()">
+                                <span class="sr-only">Tutup</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(message);
+                
+                // Auto-remove after 10 seconds
+                setTimeout(() => {
+                    message.remove();
+                }, 10000);
+            };
+        });
+    </script>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand -->
+                <a href="{{ url_for('login') }}" class="flex items-center gap-2 flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 3a9 9 0 100 18 9 9 0 000-18Zm1 9V7a1 1 0 10-2 0v5a1 1 0 00.293.707l3 3a1 1 0 101.414-1.414L13 12.586Z" />
+                    </svg>
+                    <span class="text-xl font-bold">Arantologi</span>
+                </a>
+
+                <!-- Desktop menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-1">
+                        <a href="{{ url_for('login') }}"
+                           class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 {{ 'bg-white/20' if request.endpoint == 'login' else '' }}">Beranda</a>
+                        <a href="{{ url_for('tentang') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">Tentang</a>
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('change_password') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">Ganti Password</a>
+                        {% if current_user.role in ['admin','platinum'] %}
+                        <a href="{{ url_for('admin_analyze') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">Analisa (Admin)</a>
+                        {% endif %}
+                        {% endif %}
+
+                        <!-- Accessible dropdown: Bantuan -->
+                        <div class="relative">
+                            <button type="button"
+                                    id="btn-bantuan"
+                                    class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                    aria-controls="menu-bantuan">Bantuan</button>
+                            <div id="menu-bantuan" role="menu" aria-labelledby="btn-bantuan"
+                                 class="absolute left-0 mt-2 w-56 bg-white text-gray-800 rounded-md shadow-lg border border-gray-200 hidden z-40">
+                                <button type="button" id="open-search-birthdates" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">Cari Tanggal Lahir</button>
+                            </div>
+                        </div>
+
+                        <!-- Print Menu -->
+                        <div class="relative">
+                            <button type="button"
+                                    id="btn-print"
+                                    class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                    aria-controls="menu-print">Print</button>
+                            <div id="menu-print" role="menu" aria-labelledby="btn-print"
+                                 class="absolute left-0 mt-2 w-56 bg-white text-gray-800 rounded-md shadow-lg border border-gray-200 hidden z-40">
+                                <button type="button" onclick="printFullPage()" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">Print Halaman Lengkap</button>
+                                <button type="button" onclick="printCurrentSection()" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">Print Section Saat Ini</button>
+                            </div>
+                        </div>
+
+                        <a href="#" onclick="return goBack();" class="px-3 py-2 rounded-md text-sm font-medium bg-white/10 hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">Kembali</a>
+                    </div>
+                </div>
+
+                <!-- Mobile hamburger -->
+                <div class="md:hidden">
+                    <button type="button" id="btn-mobile-nav" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mobile-menu"
+                            class="inline-flex items-center justify-center p-2 rounded-md hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu panel -->
+        <div id="mobile-menu" class="md:hidden hidden border-t border-white/10">
+            <div class="px-4 pt-2 pb-3 space-y-1">
+                <a href="{{ url_for('login') }}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-white/10 {{ 'bg-white/20' if request.endpoint == 'login' else '' }}">Beranda</a>
+                <a href="{{ url_for('tentang') }}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-white/10">Tentang</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('change_password') }}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-white/10">Ganti Password</a>
+                {% if current_user.role in ['admin','platinum'] %}
+                <a href="{{ url_for('admin_analyze') }}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-white/10">Analisa (Admin)</a>
+                {% endif %}
+                {% endif %}
+                <div class="border-t border-white/10 my-2"></div>
+                <button type="button" id="btn-bantuan-mobile" class="w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-white/10"
+                        aria-haspopup="true" aria-expanded="false" aria-controls="menu-bantuan-mobile">Bantuan</button>
+                <div id="menu-bantuan-mobile" role="menu" aria-labelledby="btn-bantuan-mobile" class="hidden pl-4">
+                    <button type="button" id="open-search-birthdates-mobile" class="w-full text-left px-3 py-2 rounded-md text-sm hover:bg-white/10" role="menuitem">Cari Tanggal Lahir</button>
+                </div>
+                <button type="button" id="btn-print-mobile" class="w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-white/10"
+                        aria-haspopup="true" aria-expanded="false" aria-controls="menu-print-mobile">Print</button>
+                <div id="menu-print-mobile" role="menu" aria-labelledby="btn-print-mobile" class="hidden pl-4">
+                    <button type="button" onclick="printFullPage()" class="w-full text-left px-3 py-2 rounded-md text-sm hover:bg-white/10" role="menuitem">Print Halaman Lengkap</button>
+                    <button type="button" onclick="printCurrentSection()" class="w-full text-left px-3 py-2 rounded-md text-sm hover:bg-white/10" role="menuitem">Print Section Saat Ini</button>
+                </div>
+                <a href="#" onclick="return goBack();" class="block px-3 py-2 rounded-md text-base font-medium bg-white/10 hover:bg-white/20">Kembali</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="max-w-5xl mx-auto px-4 mt-6">
+                {% for category, message in messages %}
+                    {% if message not in ['Silakan isi data terlebih dahulu', 'Data berhasil disimpan'] %}
+                        <div class="mb-4 p-4 rounded-lg border-l-4 {{ 'bg-red-50 border-red-500 text-red-700' if category == 'error' else 'bg-green-50 border-green-500 text-green-700' if category == 'success' else 'bg-blue-50 border-blue-500 text-blue-700' }}">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 {{ 'text-red-500' if category == 'error' else 'text-green-500' if category == 'success' else 'text-blue-500' }}" 
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h.01a1 1 0 100-2H10V9z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm">{{ message }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    {% block content %}{% endblock %}
+
+    <!-- Modal: Cari Tanggal Lahir -->
+    <div id="search-birthdates-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-xl p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Cari Tanggal Lahir</h3>
+                <button type="button" class="text-gray-500 hover:text-gray-700" id="close-search-birthdates">✕</button>
+            </div>
+            <form id="search-birthdates-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Hari</label>
+                    <select name="hari" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <option value="Senin">Senin</option>
+                        <option value="Selasa">Selasa</option>
+                        <option value="Rabu">Rabu</option>
+                        <option value="Kamis">Kamis</option>
+                        <option value="Jumat">Jumat</option>
+                        <option value="Sabtu">Sabtu</option>
+                        <option value="Minggu">Minggu</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Pasaran</label>
+                    <select name="pasaran" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <option value="Umanis">Umanis (Legi)</option>
+                        <option value="Pahing">Pahing</option>
+                        <option value="Pon">Pon</option>
+                        <option value="Wage">Wage</option>
+                        <option value="Kliwon">Kliwon</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Wuku</label>
+                    <select name="wuku" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <option>Sinta</option>
+                        <option>Landep</option>
+                        <option>Ukir</option>
+                        <option>Kurantil</option>
+                        <option>Tolu</option>
+                        <option>Gumbreg</option>
+                        <option>Wariga</option>
+                        <option>Warigadian</option>
+                        <option>Julungwangi</option>
+                        <option>Sungsang</option>
+                        <option>Dunggulan</option>
+                        <option>Kuningan</option>
+                        <option>Langkir</option>
+                        <option>Medangsia</option>
+                        <option>Pujut</option>
+                        <option>Pahang</option>
+                        <option>Krulut</option>
+                        <option>Merakih</option>
+                        <option>Tambir</option>
+                        <option>Medangkungan</option>
+                        <option>Matal</option>
+                        <option>Uye</option>
+                        <option>Menail</option>
+                        <option>Perangbakat</option>
+                        <option>Bala</option>
+                        <option>Ugu</option>
+                        <option>Wayang</option>
+                        <option>Kelawu</option>
+                        <option>Dukut</option>
+                        <option>Watugunung</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+                    <input type="number" name="year" min="1600" max="2200" class="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="contoh: 1990" />
+                </div>
+                <div class="md:col-span-2 flex items-center gap-3 mt-2">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700" id="btn-search-birthdates">
+                        Cari
+                    </button>
+                    <span class="text-sm text-gray-500" id="search-birthdates-status"></span>
+                </div>
+            </form>
+            <div id="search-birthdates-results" class="mt-4 max-h-64 overflow-auto hidden">
+                <h4 class="text-sm font-semibold text-gray-900 mb-2">Hasil</h4>
+                <ul class="list-disc pl-5 space-y-1 text-gray-700" id="search-birthdates-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    {% if not hide_footer %}
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Tentang Kami</h3>
+                    <p class="text-gray-600 text-sm">Aplikasi perhitungan numerologi berbasis web yang membantu Anda memahami lebih dalam tentang diri Anda melalui angka.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Navigasi</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('home') }}" class="text-gray-600 hover:text-blue-600 text-sm">Beranda</a></li>
+                        <li><a href="{{ url_for('tentang') }}" class="text-gray-600 hover:text-blue-600 text-sm">Tentang</a></li>
+                        <li><a href="#bantuan" class="text-gray-600 hover:text-blue-600 text-sm">Bantuan</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Kontak</h3>
+                    <p class="text-gray-600 text-sm">Email: you.twoban@gmail.com</p>
+                    <p class="text-gray-600 text-sm">Telepon: +62 813 3857 6699</p>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-200 text-center text-gray-500 text-sm">
+                <p>&copy; 2025 Arantologi. Semua hak dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+    (function(){
+        // Desktop Bantuan dropdown
+        var bantuanBtn = document.getElementById('btn-bantuan');
+        var bantuanMenu = document.getElementById('menu-bantuan');
+        if (bantuanBtn && bantuanMenu) {
+            function closeDesktopMenu(){ bantuanMenu.classList.add('hidden'); bantuanBtn.setAttribute('aria-expanded','false'); }
+            bantuanBtn.addEventListener('click', function(){
+                var expanded = bantuanBtn.getAttribute('aria-expanded') === 'true';
+                if (expanded) { closeDesktopMenu(); } else { bantuanMenu.classList.remove('hidden'); bantuanBtn.setAttribute('aria-expanded','true'); }
+            });
+            document.addEventListener('click', function(e){ if (!bantuanMenu.contains(e.target) && !bantuanBtn.contains(e.target)) closeDesktopMenu(); });
+            document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeDesktopMenu(); });
+        }
+
+        // Mobile hamburger
+        var mobileBtn = document.getElementById('btn-mobile-nav');
+        var mobileMenu = document.getElementById('mobile-menu');
+        if (mobileBtn && mobileMenu) {
+            mobileBtn.addEventListener('click', function(){
+                var expanded = mobileBtn.getAttribute('aria-expanded') === 'true';
+                if (expanded) { mobileMenu.classList.add('hidden'); mobileBtn.setAttribute('aria-expanded','false'); }
+                else { mobileMenu.classList.remove('hidden'); mobileBtn.setAttribute('aria-expanded','true'); }
+            });
+        }
+
+        // Mobile Bantuan submenu
+        var bantuanBtnM = document.getElementById('btn-bantuan-mobile');
+        var bantuanMenuM = document.getElementById('menu-bantuan-mobile');
+        if (bantuanBtnM && bantuanMenuM) {
+            bantuanBtnM.addEventListener('click', function(){
+                var expanded = bantuanBtnM.getAttribute('aria-expanded') === 'true';
+                if (expanded) { bantuanMenuM.classList.add('hidden'); bantuanBtnM.setAttribute('aria-expanded','false'); }
+                else { bantuanMenuM.classList.remove('hidden'); bantuanBtnM.setAttribute('aria-expanded','true'); }
+            });
+            document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { bantuanMenuM.classList.add('hidden'); bantuanBtnM.setAttribute('aria-expanded','false'); }});
+        }
+
+        // Wire mobile search button to same action as desktop
+        var openSearchDesktop = document.getElementById('open-search-birthdates');
+        var openSearchMobile = document.getElementById('open-search-birthdates-mobile');
+        if (openSearchDesktop && openSearchMobile) {
+            openSearchMobile.addEventListener('click', function(){ openSearchDesktop.click(); });
+        }
+
+        // Desktop Print dropdown
+        var printBtn = document.getElementById('btn-print');
+        var printMenu = document.getElementById('menu-print');
+        if (printBtn && printMenu) {
+            function closePrintMenu(){ printMenu.classList.add('hidden'); printBtn.setAttribute('aria-expanded','false'); }
+            printBtn.addEventListener('click', function(){
+                var expanded = printBtn.getAttribute('aria-expanded') === 'true';
+                if (expanded) { closePrintMenu(); } else { printMenu.classList.remove('hidden'); printBtn.setAttribute('aria-expanded','true'); }
+            });
+            document.addEventListener('click', function(e){ if (!printMenu.contains(e.target) && !printBtn.contains(e.target)) closePrintMenu(); });
+            document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closePrintMenu(); });
+        }
+
+        // Mobile Print submenu
+        var printBtnM = document.getElementById('btn-print-mobile');
+        var printMenuM = document.getElementById('menu-print-mobile');
+        if (printBtnM && printMenuM) {
+            printBtnM.addEventListener('click', function(){
+                var expanded = printBtnM.getAttribute('aria-expanded') === 'true';
+                if (expanded) { printMenuM.classList.add('hidden'); printBtnM.setAttribute('aria-expanded','false'); }
+                else { printMenuM.classList.remove('hidden'); printBtnM.setAttribute('aria-expanded','true'); }
+            });
+            document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { printMenuM.classList.add('hidden'); printBtnM.setAttribute('aria-expanded','false'); }});
+        }
+    })();
+
+    // Print Functions
+    function printFullPage() {
+        // Create print-specific styles
+        var printStyles = `
+            <style media="print">
+                @page {
+                    margin: 1cm;
+                    size: A4;
+                }
+                
+                /* Hide navigation and non-essential elements */
+                nav, .print-hide, .no-print, .print-btn {
+                    display: none !important;
+                }
+                
+                /* Print header */
+                .print-header {
+                    display: block !important;
+                    text-align: center;
+                    margin-bottom: 20px;
+                    border-bottom: 2px solid #333;
+                    padding-bottom: 10px;
+                }
+                
+                /* Print footer */
+                .print-footer {
+                    display: block !important;
+                    text-align: center;
+                    margin-top: 20px;
+                    border-top: 1px solid #333;
+                    padding-top: 10px;
+                    font-size: 12px;
+                }
+                
+                /* Ensure good print layout */
+                body { font-size: 12pt; line-height: 1.4; }
+                h1, h2, h3 { page-break-after: avoid; }
+                .container { max-width: none !important; }
+                .bg-gradient-to-r { background: #f8f9fa !important; }
+                .text-white { color: #333 !important; }
+                
+                /* Print sections nicely */
+                .print-section {
+                    page-break-inside: avoid;
+                    margin-bottom: 20px;
+                }
+                
+                /* Fix SVG icons in print */
+                svg {
+                    width: 16px !important;
+                    height: 16px !important;
+                    display: inline-block !important;
+                    vertical-align: middle !important;
+                }
+                
+                /* Ensure icon containers don't break layout */
+                .p-2, .p-3 {
+                    padding: 8px !important;
+                    display: inline-block !important;
+                }
+                
+                /* Fix flex layouts for print */
+                .flex {
+                    display: block !important;
+                }
+                
+                .flex.items-center {
+                    display: flex !important;
+                    align-items: center !important;
+                }
+                
+                /* Prevent page breaks in sections */
+                .flex.items-center,
+                .bg-purple-100, .bg-green-100, .bg-orange-100, 
+                .bg-blue-100, .bg-pink-100 {
+                    page-break-inside: avoid !important;
+                }
+            </style>
+        `;
+        
+        // Add print header and footer
+        var printHeader = `
+            <div class="print-header" style="display: none;">
+                <h1>Laporan Arantologi</h1>
+                <p>Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}</p>
+                <p>Email: you.twoban@gmail.com | Telepon: +62 813 3857 6699</p>
+            </div>
+        `;
+        
+        var printFooter = `
+            <div class="print-footer" style="display: none;">
+                <p>&copy; 2025 Arantologi. Semua hak dilindungi.</p>
+                <p>Email: you.twoban@gmail.com | Telepon: +62 813 3857 6699</p>
+            </div>
+        `;
+        
+        // Insert styles and headers
+        document.head.insertAdjacentHTML('beforeend', printStyles);
+        document.body.insertAdjacentHTML('afterbegin', printHeader);
+        document.body.insertAdjacentHTML('beforeend', printFooter);
+        
+        // Print
+        window.print();
+        
+        // Clean up after print
+        setTimeout(function() {
+            var printElements = document.querySelectorAll('.print-header, .print-footer');
+            printElements.forEach(el => el.remove());
+            var printStylesEl = document.querySelector('style[media="print"]');
+            if (printStylesEl) printStylesEl.remove();
+        }, 1000);
+    }
+
+    function printCurrentSection() {
+        // Find the main content section
+        var mainContent = document.querySelector('.container.mx-auto, main, .content, [role="main"]');
+        if (!mainContent) {
+            mainContent = document.querySelector('.bg-white.rounded-xl, .result-card, .card');
+        }
+        
+        if (!mainContent) {
+            alert('Tidak dapat menemukan section untuk dicetak. Gunakan Print Halaman Lengkap.');
+            return;
+        }
+        
+        printSpecificSection(mainContent, 'Section Utama');
+    }
+
+    // Function to print specific section by element
+    function printSpecificSection(element, sectionTitle) {
+        if (!element) {
+            alert('Section tidak ditemukan untuk dicetak.');
+            return;
+        }
+        
+        // Create new window for printing
+        var printWindow = window.open('', '_blank');
+        var currentTitle = document.title || 'Numerologi';
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>${currentTitle} - ${sectionTitle}</title>
+                <style>
+                    @page { margin: 1cm; size: A4; }
+                    body { font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.4; margin: 0; padding: 20px; }
+                    .print-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+                    .print-footer { text-align: center; margin-top: 20px; border-top: 1px solid #333; padding-top: 10px; font-size: 10pt; }
+                    h1, h2, h3 { color: #333; page-break-after: avoid; }
+                    .bg-gradient-to-r { background: #f8f9fa !important; }
+                    .text-white { color: #333 !important; }
+                    .shadow-lg, .shadow-sm { box-shadow: none !important; }
+                    .rounded-xl, .rounded-lg { border: 1px solid #ddd; }
+                    .p-6, .p-4 { padding: 15px; }
+                    .mb-6, .mb-4 { margin-bottom: 15px; }
+                    .text-center { text-align: center; }
+                    .font-bold { font-weight: bold; }
+                    .text-2xl { font-size: 18pt; }
+                    .text-xl { font-size: 16pt; }
+                    .text-lg { font-size: 14pt; }
+                    .print-btn { display: none !important; }
+                    
+                    /* Fix SVG icons in print */
+                    svg {
+                        width: 16px !important;
+                        height: 16px !important;
+                        display: inline-block !important;
+                        vertical-align: middle !important;
+                    }
+                    
+                    /* Ensure icon containers don't break layout */
+                    .p-2, .p-3 {
+                        padding: 8px !important;
+                        display: inline-block !important;
+                    }
+                    
+                    /* Fix flex layouts for print */
+                    .flex {
+                        display: block !important;
+                    }
+                    
+                    .flex.items-center {
+                        display: flex !important;
+                        align-items: center !important;
+                    }
+                    
+                    /* Prevent page breaks in sections */
+                    .flex.items-center,
+                    .bg-purple-100, .bg-green-100, .bg-orange-100, 
+                    .bg-blue-100, .bg-pink-100 {
+                        page-break-inside: avoid !important;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="print-header">
+                    <h1>Laporan Numerologi - ${sectionTitle}</h1>
+                    <p>Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}</p>
+                    <p>Email: you.twoban@gmail.com | Telepon: +62 813 3857 6699</p>
+                </div>
+                
+                ${element.innerHTML}
+                
+                <div class="print-footer">
+                    <p>&copy; 2025 Numerologi. Semua hak dilindungi.</p>
+                    <p>Email: you.twoban@gmail.com | Telepon: +62 813 3857 6699</p>
+                </div>
+            </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+        printWindow.focus();
+        
+        // Wait for content to load then print
+        setTimeout(function() {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
+    }
+
+    // Function to print section by ID
+    function printSectionById(sectionId, sectionTitle) {
+        var element = document.getElementById(sectionId);
+        if (!element) {
+            // Try to find by class or other selector
+            element = document.querySelector('.' + sectionId);
+        }
+        
+        if (!element) {
+            alert('Section "' + sectionTitle + '" tidak ditemukan.');
+            return;
+        }
+        
+        printSpecificSection(element, sectionTitle);
+    }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title|default('Hasil Perhitungan Weton') }} - Numerologi{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8 sm:py-12">
+    <!-- Header Section -->
+    <div class="text-center mb-10">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Hasil Perhitungan Weton</h1>
+        <p class="text-lg text-gray-600">Analisis Lengkap Berdasarkan Tanggal Lahir</p>
+        <div class="mt-4 h-1 w-24 bg-yellow-500 mx-auto rounded-full"></div>
+    </div>
+
+    
+
+    <!-- Main Result Card -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-10 border border-gray-100">
+        <!-- Profile Header -->
+        <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 p-6 text-white">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl md:text-2xl font-bold">{{ name }}</h3>
+                    <p class="text-yellow-100 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                        </svg>
+                        Lahir pada {{ birth_date }}
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-white bg-opacity-20 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {{ hari }}
+                    </span>
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-white bg-opacity-20 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ pasaran }}
+                    </span>
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-white bg-opacity-20 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        Neptu: {{ neptu }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 md:p-8">
+            <!-- Quick Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <!-- Hari Card -->
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-100 transform transition-all duration-300 hover:scale-105 hover:shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-blue-100 rounded-lg mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-blue-800">Hari Lahir</h3>
+                    </div>
+                    <p class="text-lg md:text-xl font-bold text-blue-700 mb-2">{{ hari }}</p>
+                    <p class="text-sm text-blue-600">Mewakili karakter dasar dan sifat bawaan Anda</p>
+                </div>
+
+                <!-- Pasaran Card -->
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-100 transform transition-all duration-300 hover:scale-105 hover:shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-green-100 rounded-lg mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-green-800">Pasaran</h3>
+                    </div>
+                    <p class="text-lg md:text-xl font-bold text-green-700 mb-2">{{ pasaran }}</p>
+                    <p class="text-sm text-green-600">Mempengaruhi sifat dan kepribadian Anda</p>
+                </div>
+
+                <!-- Neptu Card -->
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-100 transform transition-all duration-300 hover:scale-105 hover:shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-purple-100 rounded-lg mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-purple-800">Neptu</h3>
+                    </div>
+                    <p class="text-2xl font-bold text-purple-700 mb-1">{{ neptu }}</p>
+                    <p class="text-sm text-purple-600">Angka penentu karakter dan nasib Anda</p>
+                </div>
+
+                <!-- Wuku Card -->
+                <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl border border-yellow-100 transform transition-all duration-300 hover:scale-105 hover:shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-yellow-100 rounded-lg mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-yellow-800">Wuku</h3>
+                    </div>
+                    <p class="text-lg md:text-xl font-bold text-yellow-700 mb-2">{{ wuku }}</p>
+                    <p class="text-sm text-yellow-600">Mempengaruhi perjalanan hidup Anda</p>
+                </div>
+
+
+                {% if lintang_name %}
+                <!-- Lintang Card -->
+                <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-6 md:p-7 rounded-xl border border-amber-100 transform transition-all duration-300 hover:scale-105 hover:shadow-md md:col-span-2 lg:col-span-4">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-amber-100 rounded-lg mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2m0 18h-2m2-18v-4a2 2 0 012-2h3m-3 4l-3-3m0 0l-3 3m3-3v2m-4 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2M7 8h10" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg md:text-xl font-semibold text-amber-800">Lintang</h3>
+                    </div>
+                    <p class="text-lg md:text-xl font-bold text-amber-700 mb-1">{{ lintang_name }}</p>
+                    {% if lintang_desc %}
+                    <p class="text-base md:text-lg text-amber-700">{{ lintang_desc }}</p>
+                    {% else %}
+                    <p class="text-sm md:text-base text-amber-600">Ditentukan dari kombinasi Hari dan Pasaran pada Weton.</p>
+                    {% endif %}
+                    {% if lintang_traits %}
+                    <div class="mt-4 space-y-2">
+                        {% for t in lintang_traits %}
+                        <div class="flex items-start gap-2">
+                            <span class="text-amber-800 font-semibold">{{ t.watak }}</span>
+                            {% if t.arti %}
+                            <span class="text-amber-700">- {{ t.arti }}</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Wewaran Section -->
+            <div class="bg-white rounded-xl p-6 md:p-8 mb-8 border border-gray-100">
+                <div class="flex items-center mb-2">
+                    <div class="p-2 bg-indigo-100 rounded-lg mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V7a2 2 0 012-2h5l2 2h5a2 2 0 012 2v10a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800">Sifat berdasarkan Wewaran</h3>
+                </div>
+                <p class="text-sm text-gray-500 mb-6">Berikut adalah sifat yang tercermin dari masing-masing tingkat Wewaran berdasarkan hasil perhitungan dan referensi Excel.</p>
+                <div class="text-gray-700">
+                    {% set default_wewaran = [
+                      {'nama': 'Ekawara', 'nilai': '', 'keterangan': ''},
+                      {'nama': 'Dwiwara', 'nilai': '', 'keterangan': ''},
+                      {'nama': 'Triwara', 'nilai': '', 'keterangan': ''},
+                      {'nama': 'Caturwara', 'nilai': '', 'keterangan': ''},
+                      {'nama': 'Sadawara', 'nilai': '', 'keterangan': ''},
+                      {'nama': 'Astawara', 'nilai': '', 'keterangan': ''},
+                      {'nama': 'Sangawara', 'nilai': '', 'keterangan': ''},
+                      {'nama': 'Dasawara', 'nilai': '', 'keterangan': ''}
+                    ] %}
+
+                    {% set list_to_show = wewaran_list if wewaran_list is defined and wewaran_list else default_wewaran %}
+
+                    <ul class="space-y-2">
+                      {% for item in list_to_show %}
+                        <li class="text-gray-700">
+                          <span class="font-semibold text-gray-900">{{ item.nama }}</span>
+                          <span class="text-gray-500"> : </span>
+                          {% if item.nilai is defined and item.nilai %}
+                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded bg-indigo-100 text-indigo-700 align-middle">{{ item.nilai }}</span>
+                          {% else %}
+                            <span class="text-gray-400">-</span>
+                          {% endif %}
+                          <span class="text-gray-500"> -> </span>
+                          <span class="align-middle">{{ item.keterangan|fmt|safe }}</span>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Detailed Interpretation Section -->
+            <div class="bg-gray-50 rounded-xl p-6 md:p-8 mb-8 border border-gray-100">
+                <div class="flex items-center mb-6">
+                    <div class="p-2 bg-yellow-100 rounded-lg mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800">Penjelasan Detail Weton</h3>
+                </div>
+                
+                <div class="prose max-w-none text-gray-700 space-y-3">
+                    {% if keterangan %}
+                        {{ keterangan | safe }}
+                    {% else %}
+                        <div class="text-center py-8">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-gray-500">Tidak ada penjelasan detail yang tersedia untuk weton ini.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="bg-blue-50 rounded-2xl p-6 md:p-8 border border-blue-100">
+        <div class="flex items-center mb-4">
+            <div class="p-2 bg-blue-100 rounded-lg mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-blue-800">Tentang Perhitungan Weton</h3>
+        </div>
+        <div class="prose max-w-none text-blue-700">
+            <p>Perhitungan weton didasarkan pada kalender Jawa yang menggabungkan siklus 7 hari (Senin-Minggu) dan siklus 5 hari pasaran (Legi, Pahing, Pon, Wage, Kliwon). Setiap kombinasi hari dan pasaran memiliki makna dan pengaruh tersendiri dalam kehidupan seseorang.</p>
+            <p>Neptu adalah nilai numerik dari kombinasi hari dan pasaran, yang digunakan untuk berbagai keperluan seperti menentukan hari baik, kecocokan jodoh, dan memperkirakan watak seseorang.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Print Styles -->
+<style type="text/css" media="print">
+    @page { margin: 0.5cm; }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print { display: none !important; }
+    .print\:block { display: block !important; }
+    .print\:w-full { width: 100% !important; }
+    .print\:p-0 { padding: 0 !important; }
+    .print\:m-0 { margin: 0 !important; }
+    .print\:shadow-none { box-shadow: none !important; }
+    .print\:border-0 { border: 0 !important; }
+    .print\:bg-transparent { background: transparent !important; }
+    .print\:text-black { color: #000 !important; }
+    .print\:text-sm { font-size: 0.875rem !important; }
+    .print\:leading-normal { line-height: 1.5 !important; }
+    .print\:break-inside-avoid { break-inside: avoid !important; }
+    .print\:break-after-avoid { break-after: avoid !important; }
+    .print\:break-before-avoid { break-before: avoid !important; }
+    .print\:break-inside-auto { break-inside: auto !important; }
+    .print\:break-after-auto { break-after: auto !important; }
+    .print\:break-before-auto { break-before: auto !important; }
+    .print\:break-inside-avoid-page { break-inside: avoid-page !important; }
+    .print\:break-after-avoid-page { break-after: avoid-page !important; }
+    .print\:break-before-avoid-page { break-before: avoid-page !important; }
+    .print\:break-inside-avoid-column { break-inside: avoid-column !important; }
+    .print\:break-after-avoid-column { break-after: avoid-column !important; }
+    .print\:break-before-avoid-column { break-before: avoid-column !important; }
+    .print\:break-inside-page { break-inside: page !important; }
+    .print\:break-after-page { break-after: page !important; }
+    .print\:break-before-page { break-before: page !important; }
+    .print\:break-inside-column { break-inside: column !important; }
+    .print\:break-after-column { break-after: column !important; }
+    .print\:break-before-column { break-before: column !important; }
+    .print\:break-inside-auto { break-inside: auto !important; }
+    .print\:break-after-auto { break-after: auto !important; }
+    .print\:break-before-auto { break-before: auto !important; }
+    .print\:break-inside-avoid { break-inside: avoid !important; }
+    .print\:break-after-avoid { break-after: avoid !important; }
+    .print\:break-before-avoid { break-before: avoid !important; }
+    .print\:break-inside-avoid-page { break-inside: avoid-page !important; }
+    .print\:break-after-avoid-page { break-after: avoid-page !important; }
+    .print\:break-before-avoid-page { break-before: avoid-page !important; }
+    .print\:break-inside-avoid-column { break-inside: avoid-column !important; }
+    .print\:break-after-avoid-column { break-after: avoid-column !important; }
+    .print\:break-before-avoid-column { break-before: avoid-column !important; }
+    .print\:break-inside-page { break-inside: page !important; }
+    .print\:break-after-page { break-after: page !important; }
+    .print\:break-before-page { break-before: page !important; }
+    .print\:break-inside-column { break-inside: column !important; }
+    .print\:break-after-column { break-after: column !important; }
+    .print\:break-before-column { break-before: column !important; }
+    .print\:break-inside-auto { break-inside: auto !important; }
+    .print\:break-after-auto { break-after: auto !important; }
+    .print\:break-before-auto { break-before: auto !important; }
+</style>
+
+<!-- Print Button -->
+<div class="fixed bottom-8 right-8 no-print">
+    <button onclick="window.print()" class="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2a2 2 0 002-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+    </button>
+</div>
+
+<script>
+// Add animation to elements
+window.addEventListener('load', function() {
+    // Animate cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-fade-in-up');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // Observe all cards
+    document.querySelectorAll('.card-animate').forEach(card => {
+        observer.observe(card);
+    });
+});
+</script>
+
+<style>
+/* Animation keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000;
+        background: #fff;
+    }
+    
+    .print-break-before {
+        page-break-before: always;
+    }
+    
+    .print-break-after {
+        page-break-after: always;
+    }
+    
+    .print-break-inside-avoid {
+        page-break-inside: avoid;
+    }
+    
+    .print-p-0 {
+        padding: 0 !important;
+    }
+    
+    .print-m-0 {
+        margin: 0 !important;
+    }
+    
+    .print-shadow-none {
+        box-shadow: none !important;
+    }
+    
+    .print-border-0 {
+        border: 0 !important;
+    }
+    
+    .print-bg-transparent {
+        background: transparent !important;
+    }
+    
+    .print-text-black {
+        color: #000 !important;
+    }
+    
+    .print-text-sm {
+        font-size: 0.875rem !important;
+    }
+    
+    .print-leading-normal {
+        line-height: 1.5 !important;
+    }
+}
+</style>
+{% endblock %}

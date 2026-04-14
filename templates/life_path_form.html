@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Life Path - Numerologi{% endblock %}
+
+{% block head %}
+<style>
+    .result-card {
+        transition: all 0.3s ease;
+    }
+    .result-card.collapsed .card-content {
+        display: none;
+    }
+    .toggle-arrow {
+        transition: transform 0.3s ease;
+    }
+    .result-card.collapsed .toggle-arrow {
+        transform: rotate(-90deg);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">Hitung Life Path Anda</h1>
+        <p class="text-lg text-gray-600">Temukan makna di balik tanggal lahir Anda</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden p-8 mb-8">
+        <form id="lifePathForm" class="space-y-6" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    {{ form.name.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                    {{ form.name(id="nameInput", class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                                placeholder="Masukkan nama lengkap Anda") }}
+                    <p id="nameError" class="mt-1 text-sm text-red-600 hidden"></p>
+                </div>
+                <div>
+                    {{ form.birth_date.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                    {{ form.birth_date(id="birthDateInput", class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500") }}
+                    <p id="birthDateError" class="mt-1 text-sm text-red-600 hidden"></p>
+                </div>
+            </div>
+            <div class="flex justify-center">
+                <button type="button" id="calculateBtn" class="w-full md:w-auto px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <span id="buttonText">Hitung Sekarang</span>
+                    <span id="buttonSpinner" class="hidden ml-2">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Result Section -->
+    <div id="resultSection" class="space-y-6">
+        <!-- Results will be inserted here by JavaScript -->
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('lifePathForm');
+    const calculateBtn = document.getElementById('calculateBtn');
+    const resultSection = document.getElementById('resultSection');
+    
+    // Format date to Indonesian format
+    function formatDate(dateString) {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', options);
+    }
+    
+    // Toggle card content
+    function toggleCard(card) {
+        card.classList.toggle('collapsed');
+    }
+    
+    // Create result card HTML
+    function createResultCard(title, content, isCollapsible = true) {
+        const cardId = 'card-' + Math.random().toString(36).substr(2, 9);
+        return `
+            <div class="result-card bg-white rounded-xl shadow-md overflow-hidden ${isCollapsible ? 'cursor-pointer' : ''}" 
+                 ${isCollapsible ? `onclick="toggleCard(this)"` : ''}>
+                <div class="p-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">${title}</h3>
+                        ${isCollapsible ? `
+                            <svg class="toggle-arrow w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        ` : ''}
+                    </div>
+                    <div class="card-content mt-4 text-gray-700">
+                        ${content}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Handle form submission
+    calculateBtn.addEventListener('click', async function() {
+        // Reset errors
+        document.querySelectorAll('.error-message').forEach(el => el.remove());
+        document.getElementById('nameError').classList.add('hidden');
+        document.getElementById('birthDateError').classList.add('hidden');
+        
+        const name = document.getElementById('nameInput').value.trim();
+        const birthDate = document.getElementById('birthDateInput').value;
+        
+        // Basic validation
+        let isValid = true;
+        if (!name) {
+            document.getElementById('nameError').textContent = 'Nama tidak boleh kosong';
+            document.getElementById('nameError').classList.remove('hidden');
+            isValid = false;
+        }
+        
+        if (!birthDate) {
+            document.getElementById('birthDateError').textContent = 'Tanggal lahir tidak boleh kosong';
+            document.getElementById('birthDateError').classList.remove('hidden');
+            isValid = false;
+        }
+        
+        if (!isValid) return;
+        
+        // Show loading state
+        const buttonText = document.getElementById('buttonText');
+        const buttonSpinner = document.getElementById('buttonSpinner');
+        buttonText.textContent = 'Menghitung...';
+        buttonSpinner.classList.remove('hidden');
+        calculateBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/api/calculate_life_path', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: new URLSearchParams({
+                    'name': name,
+                    'birth_date': birthDate,
+                    'csrf_token': document.querySelector('input[name="csrf_token"]').value
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Terjadi kesalahan saat memproses data');
+            }
+            
+            // Clear previous results
+            resultSection.innerHTML = '';
+            
+            // Add result cards
+            const result = data.data;
+            
+            // Personal Info Card
+            resultSection.innerHTML += createResultCard(
+                'Informasi Pribadi',
+                `
+                    <div class="space-y-2">
+                        <p><span class="font-medium">Nama:</span> ${result.name}</p>
+                        <p><span class="font-medium">Tanggal Lahir:</span> ${formatDate(birthDate)}</p>
+                        <p class="text-xl font-bold text-blue-600 mt-4">Life Path Number: ${result.life_path_number}</p>
+                    </div>
+                `,
+                false
+            );
+            
+            // Life Path Meaning
+            if (result.life_path_meaning) {
+                resultSection.innerHTML += createResultCard(
+                    'Makna Life Path',
+                    `<p class="whitespace-pre-line">${result.life_path_meaning}</p>`
+                );
+            }
+            
+            // Additional Info
+            if (result.additional_info) {
+                resultSection.innerHTML += createResultCard(
+                    'Informasi Tambahan',
+                    `<p class="whitespace-pre-line">${result.additional_info}</p>`
+                );
+            }
+            
+            // Personality Traits
+            if (result.personality_traits && result.personality_traits.length > 0) {
+                const traitsHtml = '<ul class="list-disc pl-5 space-y-2">' + 
+                    result.personality_traits.map(trait => `<li>${trait}</li>`).join('') + 
+                    '</ul>';
+                resultSection.innerHTML += createResultCard('Sifat Pribadi', traitsHtml);
+            }
+            
+            // Challenges
+            if (result.challenges && result.challenges.length > 0) {
+                const challengesHtml = '<ul class="list-disc pl-5 space-y-2">' + 
+                    result.challenges.map(challenge => `<li>${challenge}</li>`).join('') + 
+                    '</ul>';
+                resultSection.innerHTML += createResultCard('Tantangan', challengesHtml);
+            }
+            
+            // Career Suggestions
+            if (result.career_suggestions && result.career_suggestions.length > 0) {
+                const careersHtml = '<ul class="list-disc pl-5 space-y-2">' + 
+                    result.career_suggestions.map(career => `<li>${career}</li>`).join('') + 
+                    '</ul>';
+                resultSection.innerHTML += createResultCard('Saran Karir', careersHtml);
+            }
+            
+            // Scroll to results
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+            
+        } catch (error) {
+            // Show error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4';
+            errorDiv.role = 'alert';
+            errorDiv.innerHTML = `
+                <p class="font-bold">Error</p>
+                <p>${error.message || 'Terjadi kesalahan saat memproses permintaan Anda'}</p>
+            `;
+            resultSection.prepend(errorDiv);
+            
+        } finally {
+            // Reset button state
+            buttonText.textContent = 'Hitung Sekarang';
+            buttonSpinner.classList.add('hidden');
+            calculateBtn.disabled = false;
+        }
+    });
+    
+    // Allow form submission with Enter key
+    form.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            calculateBtn.click();
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Perhitungan - Numerologi{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">
+            {% if calculation_type == 'life_path' %}Life Path Number
+            {% elif calculation_type == 'harani' %}Angka Harani
+            {% elif calculation_type == 'weton' %}Weton Jawa
+            {% elif calculation_type == 'karma' %}Karma Number
+            {% elif calculation_type == 'rejeki' %}Angka Rejeki
+            {% elif calculation_type == 'arah' %}Arah Rejeki
+            {% else %}Hasil Numerologi{% endif %}
+        </h1>
+        <p class="text-lg text-gray-600">Hasil analisis berdasarkan data yang Anda berikan</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div class="p-8">
+            <!-- Header with Name and Birth Date -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900">{{ name }}</h2>
+                    <p class="text-gray-600">Tanggal Lahir: {{ birth_date }}</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <span class="inline-flex items-center px-6 py-3 rounded-full text-lg font-bold 
+                        {% if calculation_type == 'life_path' %}bg-blue-100 text-blue-800
+                        {% elif calculation_type == 'harani' %}bg-purple-100 text-purple-800
+                        {% elif calculation_type == 'weton' %}bg-yellow-100 text-yellow-800
+                        {% elif calculation_type == 'karma' %}bg-green-100 text-green-800
+                        {% elif calculation_type == 'rejeki' %}bg-red-100 text-red-800
+                        {% elif calculation_type == 'arah' %}bg-indigo-100 text-indigo-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {% if calculation_type == 'life_path' %}Life Path: {{ result.life_path_number }}
+                        {% elif calculation_type == 'harani' %}Angka Harani: {{ result.harani_number }}
+                        {% elif calculation_type == 'weton' %}Weton: {{ result.weton_name }}
+                        {% elif calculation_type == 'karma' %}Karma: {{ result.karma_number }}
+                        {% elif calculation_type == 'rejeki' %}Angka Rejeki: {{ result.rejeki_number }}
+                        {% elif calculation_type == 'arah' %}Arah Rejeki: {{ result.arah }}
+                        {% else %}Hasil{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Result Content -->
+            <div class="border-t border-gray-200 pt-8">
+                {% if calculation_type == 'life_path' %}
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Makna Life Path {{ result.life_path_number }}</h3>
+                    <div class="prose max-w-none">
+                        <p class="text-gray-700 mb-6">{{ result.meaning|safe }}</p>
+                        
+                        {% if result.details %}
+                        <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                            <h4 class="text-lg font-medium text-blue-800 mb-2">Informasi Tambahan:</h4>
+                            <p class="text-gray-700">{{ result.details|safe }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if result.strengths %}
+                        <div class="mt-8">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-3">Kekuatan Utama:</h4>
+                            <ul class="space-y-2">
+                                {% for strength in result.strengths %}
+                                <li class="flex items-start">
+                                    <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span class="text-gray-700">{{ strength }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        {% if result.challenges %}
+                        <div class="mt-6">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-3">Tantangan:</h4>
+                            <ul class="space-y-2">
+                                {% for challenge in result.challenges %}
+                                <li class="flex items-start">
+                                    <svg class="h-5 w-5 text-yellow-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <span class="text-gray-700">{{ challenge }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                {% elif calculation_type == 'harani' %}
+                    <div class="space-y-6">
+                        <div class="bg-purple-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-purple-800 mb-3">Nama: {{ name }}</h3>
+                            <p class="text-gray-700 text-lg">Angka Harani: <span class="font-bold">{{ result.harani_number }}</span></p>
+                        </div>
+                        
+                        <div class="prose max-w-none">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Makna Angka Harani</h3>
+                            <div class="bg-white p-4 border-l-4 border-purple-500">
+                                <p class="text-gray-700">{{ result.meaning|safe }}</p>
+                            </div>
+                            
+                            {% if result.personality %}
+                            <div class="mt-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-3">Kepribadian:</h4>
+                                <p class="text-gray-700">{{ result.personality|safe }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if result.career %}
+                            <div class="mt-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-3">Karir yang Cocok:</h4>
+                                <p class="text-gray-700">{{ result.career|safe }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                {% elif calculation_type == 'weton' %}
+                    <div class="space-y-6">
+                        <div class="bg-yellow-50 p-6 rounded-lg">
+                            <h3 class="text-2xl font-bold text-yellow-800 mb-2">{{ result.weton_name }}</h3>
+                            <p class="text-gray-700">{{ result.date_info }}</p>
+                            {% if result.total_neptu %}
+                            <p class="text-gray-700 mt-2">Total Neptu: <span class="font-semibold">{{ result.total_neptu }}</span></p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="prose max-w-none">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Makna Weton</h3>
+                            <div class="bg-white p-4 border-l-4 border-yellow-500">
+                                <p class="text-gray-700">{{ result.meaning|safe }}</p>
+                            </div>
+                            
+                            {% if result.character %}
+                            <div class="mt-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-3">Karakter:</h4>
+                                <p class="text-gray-700">{{ result.character|safe }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if result.compatibility %}
+                            <div class="mt-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-3">Kecocokan:</h4>
+                                <p class="text-gray-700">{{ result.compatibility|safe }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if result.recommendations %}
+                            <div class="mt-6 bg-blue-50 p-4 rounded-lg">
+                                <h4 class="text-lg font-semibold text-blue-800 mb-2">Rekomendasi:</h4>
+                                <p class="text-gray-700">{{ result.recommendations|safe }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                {% elif calculation_type in ['karma', 'rejeki', 'arah'] %}
+                    <div class="space-y-6">
+                        <div class="{% if calculation_type == 'karma' %}bg-green-50 text-green-800
+                                  {% elif calculation_type == 'rejeki' %}bg-red-50 text-red-800
+                                  {% else %}bg-indigo-50 text-indigo-800{% endif %} p-6 rounded-lg">
+                            <h3 class="text-2xl font-bold mb-2">
+                                {% if calculation_type == 'karma' %}Angka Karma
+                                {% elif calculation_type == 'rejeki' %}Angka Rejeki
+                                {% else %}Arah Rejeki{% endif %}
+                            </h3>
+                            <p class="text-lg font-semibold">
+                                {% if calculation_type == 'karma' %}{{ result.karma_number }}
+                                {% elif calculation_type == 'rejeki' %}{{ result.rejeki_number }}
+                                {% else %}{{ result.arah }}{% endif %}
+                            </p>
+                        </div>
+                        
+                        <div class="prose max-w-none">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                                {% if calculation_type == 'karma' %}Makna Angka Karma
+                                {% elif calculation_type == 'rejeki' %}Makna Angka Rejeki
+                                {% else %}Makna Arah Rejeki{% endif %}
+                            </h3>
+                            <div class="bg-white p-4 border-l-4 
+                                      {% if calculation_type == 'karma' %}border-green-500
+                                      {% elif calculation_type == 'rejeki' %}border-red-500
+                                      {% else %}border-indigo-500{% endif %}">
+                                <p class="text-gray-700">{{ result.meaning|safe }}</p>
+                            </div>
+                            
+                            {% if result.interpretation %}
+                            <div class="mt-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-3">Penjelasan:</h4>
+                                <p class="text-gray-700">{{ result.interpretation|safe }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if result.recommendations %}
+                            <div class="mt-6 bg-blue-50 p-4 rounded-lg">
+                                <h4 class="text-lg font-semibold text-blue-800 mb-2">Saran:</h4>
+                                <p class="text-gray-700">{{ result.recommendations|safe }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                {% else %}
+                    <!-- Default/Other Result Content -->
+                    <div class="prose max-w-none">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Hasil Perhitungan</h3>
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <p class="text-gray-700">{{ result.message|default('Tidak ada hasil yang tersedia.')|safe }}</p>
+                        </div>
+                        
+                        {% if result.details %}
+                        <div class="mt-6">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-3">Detail:</h4>
+                            <div class="bg-white p-4 border border-gray-200 rounded-lg">
+                                <p class="text-gray-700">{{ result.details|safe }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+        <a href="{{ url_for('home') }}" class="inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Kembali ke Beranda
+        </a>
+        
+        <a href="{{ url_for('cards', calculation_type=calculation_type, name=name, birth_date=birth_date) if calculation_type in ['karma', 'rejeki', 'arah'] else '#' }}" 
+           class="{% if calculation_type not in ['karma', 'rejeki', 'arah'] %}hidden{% endif %} inline-flex justify-center items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Lihat Detail Lainnya
+        </a>
+    </div>
+</div>
+{% endblock %}

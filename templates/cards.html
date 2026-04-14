@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% set name = name if name is defined else '' %}
+{% set birth_date = birth_date if birth_date is defined else '' %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {% if not name or not birth_date %}
+    <div class="text-center mb-12">
+        <h2 class="text-2xl font-extrabold text-gray-900 sm:text-3xl lg:text-4xl mb-6">
+            Masukkan Data Diri Anda
+        </h2>
+        <p class="max-w-2xl mx-auto text-xl text-gray-600">
+            Silakan isi data diri Anda untuk melanjutkan
+        </p>
+    </div>
+
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-8">
+        <form method="POST" action="{{ url_for('show_cards') }}" class="space-y-6">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                <input type="text" id="name" name="name" required 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg" 
+                    placeholder="Masukkan nama lengkap"
+                    value="{{ request.form.name if request.form.name else '' }}">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
+                
+                <!-- Safari-compatible date picker -->
+                <div class="grid grid-cols-3 gap-3">
+                    <!-- Day -->
+                    <div>
+                        <label for="birth_day" class="block text-xs text-gray-500 mb-1">Tanggal</label>
+                        <select id="birth_day" name="birth_day" required 
+                                class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg">
+                            <option value="">Pilih</option>
+                            {% for day in range(1, 32) %}
+                                <option value="{{ '%02d'|format(day) }}" 
+                                        {% if request.form.birth_day == '%02d'|format(day) %}selected{% endif %}>
+                                    {{ day }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Month -->
+                    <div>
+                        <label for="birth_month" class="block text-xs text-gray-500 mb-1">Bulan</label>
+                        <select id="birth_month" name="birth_month" required 
+                                class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg">
+                            <option value="">Pilih</option>
+                            <option value="01" {% if request.form.birth_month == '01' %}selected{% endif %}>Januari</option>
+                            <option value="02" {% if request.form.birth_month == '02' %}selected{% endif %}>Februari</option>
+                            <option value="03" {% if request.form.birth_month == '03' %}selected{% endif %}>Maret</option>
+                            <option value="04" {% if request.form.birth_month == '04' %}selected{% endif %}>April</option>
+                            <option value="05" {% if request.form.birth_month == '05' %}selected{% endif %}>Mei</option>
+                            <option value="06" {% if request.form.birth_month == '06' %}selected{% endif %}>Juni</option>
+                            <option value="07" {% if request.form.birth_month == '07' %}selected{% endif %}>Juli</option>
+                            <option value="08" {% if request.form.birth_month == '08' %}selected{% endif %}>Agustus</option>
+                            <option value="09" {% if request.form.birth_month == '09' %}selected{% endif %}>September</option>
+                            <option value="10" {% if request.form.birth_month == '10' %}selected{% endif %}>Oktober</option>
+                            <option value="11" {% if request.form.birth_month == '11' %}selected{% endif %}>November</option>
+                            <option value="12" {% if request.form.birth_month == '12' %}selected{% endif %}>Desember</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Year -->
+                    <div>
+                        <label for="birth_year" class="block text-xs text-gray-500 mb-1">Tahun</label>
+                        <select id="birth_year" name="birth_year" required 
+                                class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg">
+                            <option value="">Pilih</option>
+                            {% for year in range(2024, 1899, -1) %}
+                                <option value="{{ year }}" 
+                                        {% if request.form.birth_year == year|string %}selected{% endif %}>
+                                    {{ year }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Hidden field for combined date -->
+                <input type="hidden" id="birth_date" name="birth_date" value="{{ request.form.birth_date if request.form.birth_date else '' }}">
+                
+                <p class="mt-2 text-sm text-gray-500">Pilih tanggal, bulan, dan tahun lahir Anda</p>
+            </div>
+            
+            <div class="pt-4">
+                <button type="submit" class="w-full flex justify-center py-3 px-6 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                    Lanjutkan
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- JavaScript for Safari-compatible date picker -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const daySelect = document.getElementById('birth_day');
+            const monthSelect = document.getElementById('birth_month');
+            const yearSelect = document.getElementById('birth_year');
+            const hiddenDateInput = document.getElementById('birth_date');
+            
+            // Parse existing birth_date value if present
+            const existingDate = hiddenDateInput.value;
+            if (existingDate) {
+                const dateParts = existingDate.split('-');
+                if (dateParts.length === 3) {
+                    yearSelect.value = dateParts[0];
+                    monthSelect.value = dateParts[1];
+                    daySelect.value = dateParts[2];
+                }
+            }
+            
+            // Function to update hidden field
+            function updateHiddenDate() {
+                const day = daySelect.value;
+                const month = monthSelect.value;
+                const year = yearSelect.value;
+                
+                if (day && month && year) {
+                    hiddenDateInput.value = year + '-' + month + '-' + day;
+                } else {
+                    hiddenDateInput.value = '';
+                }
+            }
+            
+            // Function to update days based on selected month and year
+            function updateDaysInMonth() {
+                const month = parseInt(monthSelect.value);
+                const year = parseInt(yearSelect.value);
+                const selectedDay = daySelect.value;
+                
+                if (!month || !year) return;
+                
+                // Calculate days in month
+                let daysInMonth = 31;
+                if (month === 2) {
+                    // February - check for leap year
+                    daysInMonth = (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28;
+                } else if ([4, 6, 9, 11].includes(month)) {
+                    daysInMonth = 30;
+                }
+                
+                // Remove excess day options
+                const dayOptions = daySelect.querySelectorAll('option');
+                dayOptions.forEach(option => {
+                    if (option.value && parseInt(option.value) > daysInMonth) {
+                        option.style.display = 'none';
+                    } else {
+                        option.style.display = 'block';
+                    }
+                });
+                
+                // Reset day if it's invalid for the selected month
+                if (selectedDay && parseInt(selectedDay) > daysInMonth) {
+                    daySelect.value = '';
+                    updateHiddenDate();
+                }
+            }
+            
+            // Add event listeners
+            daySelect.addEventListener('change', updateHiddenDate);
+            monthSelect.addEventListener('change', function() {
+                updateDaysInMonth();
+                updateHiddenDate();
+            });
+            yearSelect.addEventListener('change', function() {
+                updateDaysInMonth();
+                updateHiddenDate();
+            });
+            
+            // Initial update
+            updateDaysInMonth();
+            updateHiddenDate();
+        });
+    </script>
+    
+    {% else %}
+    <div class="text-center mb-12">
+        <h2 class="text-2xl font-extrabold text-gray-900 sm:text-3xl lg:text-4xl mb-6">
+            Pilih Jenis Perhitungan
+        </h2>
+        <p class="max-w-2xl mx-auto text-xl text-gray-600">
+            Berikut adalah berbagai jenis perhitungan numerologi yang tersedia
+        </p>
+    </div>
+
+    {% set role = current_user.role if current_user.is_authenticated else 'bronze' %}
+    {% set is_admin = role == 'admin' %}
+    {% set allowed_extra = role in ['silver','gold','admin'] %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Life Path Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div class="p-6">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Life Path</h3>
+                <p class="text-gray-600 text-center mb-4">Temukan jalan hidup Anda berdasarkan tanggal lahir</p>
+                <a href="{{ url_for('calculate_lifepath') }}" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    Cek Sekarang
+                </a>
+            </div>
+        </div>
+
+        <!-- Harani Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div class="p-6">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Harani</h3>
+                <p class="text-gray-600 text-center mb-4">Analisis nama lengkap Anda berdasarkan numerologi</p>
+                <a href="{{ url_for('harani_form') }}" class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    Cek Sekarang
+                </a>
+            </div>
+        </div>
+
+        <!-- Weton Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div class="p-6">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Weton</h3>
+                <p class="text-gray-600 text-center mb-4">Ketahui weton dan perhitungan Jawa kuno Anda</p>
+                <a href="{{ url_for('calculate_weton') }}" class="block w-full text-center bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    Cek Sekarang
+                </a>
+            </div>
+        </div>
+
+        <!-- Karma Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div class="p-6">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Pelajaran Karma</h3>
+                <p class="text-gray-600 text-center mb-4">Temukan pelajaran karma dari namamu</p>
+                {% if allowed_extra %}
+                    <a href="{{ url_for('calculate_karma') }}" class="block w-full text-center bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Cek Sekarang
+                    </a>
+                {% else %}
+                    <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">
+                        Terkunci - Upgrade ke Silver
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Rejeki Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div class="p-6">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Rejeki</h3>
+                <p class="text-gray-600 text-center mb-4">Analisis potensi rejeki dan kekayaan Anda</p>
+                {% if allowed_extra %}
+                    <a href="{{ url_for('calculate_rejeki') }}" class="block w-full text-center bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Cek Sekarang
+                    </a>
+                {% else %}
+                    <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">
+                        Terkunci - Upgrade ke Silver
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Arah Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div class="p-6">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-center text-gray-900 mb-2">Arah</h3>
+                <p class="text-gray-600 text-center mb-4">Temukan arah keberuntungan Anda</p>
+                {% if allowed_extra %}
+                    <a href="{{ url_for('calculate_arah') }}" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Cek Sekarang
+                    </a>
+                {% else %}
+                    <div class="block w-full text-center bg-gray-200 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">
+                        Terkunci - Upgrade ke Silver
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block calculation_form %}
+{% include 'calculation_form.html' %}
+{% endblock %}

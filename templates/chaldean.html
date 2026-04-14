@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Perhitungan Chaldean{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">Hasil Perhitungan Chaldean</h1>
+        <p class="text-lg text-gray-600">Analisis Numerologi Metode Chaldean</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div class="p-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900">{{ name }}</h2>
+                    <p class="text-gray-600">Tanggal Lahir: {{ birth_date }}</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                        Angka Chaldean: {{ chaldean_data.number }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Calculation Steps - Hidden -->
+            {% if false %}
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Proses Perhitungan</h3>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="space-y-2">
+                        {% for step in chaldean_data.steps %}
+                        <div class="text-sm text-gray-700 font-mono">{{ step }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Letter Values -->
+            {% if chaldean_data.letter_values %}
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Nilai Huruf Chaldean</h3>
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <div class="flex flex-wrap gap-2 justify-center">
+                        {% for letter, value in chaldean_data.letter_values.items() %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                            {{ letter }}={{ value }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="border-t border-gray-200 pt-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Makna Angka Chaldean Anda</h3>
+                
+                <!-- Description -->
+                <div class="mb-8">
+                    <div class="bg-purple-50 border-l-4 border-purple-400 p-6 rounded-r">
+                        <div class="flex items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <span class="text-xl font-bold text-purple-800">{{ chaldean_data.number }}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-medium text-purple-800">Angka {{ chaldean_data.number }}</h4>
+                                <p class="text-sm text-purple-600">Sistem Chaldean</p>
+                            </div>
+                        </div>
+                        {# Tampilkan deskripsi per paragraf, pecah berdasarkan baris baru #}
+                        {% set desc = (chaldean_data.description or '').replace('\r\n', '\n').replace('\r', '\n') %}
+                        {% for para in desc.split('\n') %}
+                        {% if para.strip() %}
+                        <p class="text-gray-700 leading-relaxed mb-3">{{ para.strip() }}</p>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Chaldean vs Pythagorean Info -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <h4 class="text-lg font-medium text-blue-800 mb-3">Tentang Sistem Chaldean</h4>
+                    <div class="text-sm text-blue-700 space-y-2">
+                        <p>• <strong>Sistem Chaldean</strong> adalah salah satu sistem numerologi tertua yang berasal dari peradaban Babel kuno.</p>
+                        <p>• Berbeda dengan sistem Pythagorean, Chaldean menggunakan nilai 1-8 (tidak ada angka 9 dalam pemetaan huruf).</p>
+                        <p>• Metode perhitungan menggunakan <strong>penjumlahan bertetangga</strong> untuk mendapatkan hasil akhir.</p>
+                        <p>• Sistem ini dianggap lebih akurat dalam mengungkap sifat spiritual dan karakter mendalam seseorang.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="text-center">
+        <a href="/login" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Kembali ke Menu Utama
+        </a>
+    </div>
+</div>
+{% endblock %}

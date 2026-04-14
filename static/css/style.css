@@ -1,0 +1,64 @@
+/* Custom styles for Numerulogi */
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom file upload button styling */
+.file-upload {
+    transition: all 0.3s ease;
+}
+
+.file-upload:hover {
+    border-color: #3b82f6;
+    background-color: #f8fafc;
+}
+
+/* Table styling */
+.table-container {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Loading spinner */
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .table-container {
+        max-height: 60vh;
+    }
+}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Name Number{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <div class="text-center mb-12">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Name Number</h1>
+    <p class="text-lg text-gray-600">Angka nama utama berdasarkan metode Arantologi</p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="p-8">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <div>
+          <h2 class="text-2xl font-semibold text-gray-900">{{ name }}</h2>
+          <p class="text-gray-600">Tanggal Lahir: {{ birth_date }}</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+          <button id="toggleFormBtn" type="button" class="inline-flex items-center px-4 py-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Tambah Nama Panggilan</button>
+        </div>
+      </div>
+
+      <div id="nicknameForm" class="hidden border rounded-lg p-4 mb-6 bg-gray-50">
+        <form method="post" action="{{ url_for('name_number_result') }}" class="space-y-4">
+          <div>
+            <label for="nickname" class="block text-sm font-medium text-gray-700">Nama Panggilan (sehari-hari)</label>
+            <input id="nickname" name="nickname" type="text" value="{{ nickname or '' }}" placeholder="Contoh: Budi" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+          </div>
+          <div>
+            <button type="submit" class="inline-flex items-center px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700">Hitung</button>
+          </div>
+        </form>
+      </div>
+
+      {% if soul_urge_number %}
+      {% if nickname %}
+      <div class="mb-2">
+        <p class="text-gray-800" style="font-size:14pt;"><span class="font-bold">Nama:</span> {{ nickname }}</p>
+      </div>
+      {% endif %}
+      <div class="mb-6">
+        <h3 class="text-xl font-semibold text-rose-700 mb-3">Soul Urge</h3>
+        <div class="flex items-start gap-4">
+          <div class="inline-flex items-center justify-center h-14 w-14 rounded-full bg-rose-100 text-rose-700 text-2xl font-bold">{{ soul_urge_number }}</div>
+          <p class="text-gray-800">{{ soul_urge_desc or 'Deskripsi belum tersedia di database.' }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if outer_expression_number %}
+      <div class="mb-2">
+        <h3 class="text-xl font-semibold text-purple-700 mb-3">OUTER Expression</h3>
+        <div class="flex items-start gap-4">
+          <div class="inline-flex items-center justify-center h-14 w-14 rounded-full bg-purple-100 text-purple-700 text-2xl font-bold">{{ outer_expression_number }}</div>
+          <p class="text-gray-800">{{ outer_expression_desc or 'Deskripsi belum tersedia di database.' }}</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="text-center mt-8">
+    <a href="{{ url_for('show_cards') }}" class="inline-flex items-center px-6 py-3 rounded-md text-white bg-blue-600 hover:bg-blue-700">Kembali ke Menu</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function(){
+    const btn = document.getElementById('toggleFormBtn');
+    const form = document.getElementById('nicknameForm');
+    if(btn && form){
+      btn.addEventListener('click', function(){
+        form.classList.toggle('hidden');
+      });
+    }
+  })();
+  </script>
+{% endblock %}

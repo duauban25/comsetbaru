@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Nama Panggilan{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-12">
+  <div class="text-center mb-10">
+    <h1 class="text-3xl font-bold text-gray-900">Hasil Nama Panggilan</h1>
+    <p class="text-gray-600">Reduksi First name dan Last name</p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow p-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-semibold text-gray-900">{{ first_name }} {{ last_name }}</h2>
+      </div>
+      <div class="mt-4 md:mt-0 flex flex-wrap gap-2 items-center">
+        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">Nama Panggilan: {{ combined_number }}</span>
+      </div>
+    </div>
+
+    <div class="space-y-8">
+      <div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">Deskripsi ({{ combined_number }})</h3>
+        {% if desc_combined_paragraphs %}
+          {% for para in desc_combined_paragraphs %}
+          <p class="text-gray-700 mb-3">{{ para }}</p>
+          {% endfor %}
+        {% else %}
+          <p class="text-gray-700">{{ desc_combined or 'Belum ada deskripsi untuk angka ini.' }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="mt-10 flex gap-3">
+      <a href="{{ url_for('panggilan_form') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">Ubah Nama</a>
+      <a href="{{ url_for('harani_result') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200">Kembali ke Harani</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

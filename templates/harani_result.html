@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Perhitungan Harani - Numerologi{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">Hasil Perhitungan Harani</h1>
+        <p class="text-lg text-gray-600">Analisis Numerologi Nama</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div class="p-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900">{{ name }}</h2>
+                    <p class="text-gray-600">Tanggal Lahir: {{ birth_date }}</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        Angka Nama: {{ name_number }}
+                    </span>
+                </div>
+            </div>
+
+
+
+            <div class="border-t border-gray-200 pt-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6">Makna Angka Nama Anda</h3>
+                
+                <!-- Deskripsi -->
+                <div class="mb-8">
+                    <h4 class="text-lg font-medium text-gray-900 mb-3">Deskripsi</h4>
+                    <p class="text-gray-700">{{ name_meaning.deskripsi }}</p>
+                </div>
+                
+                <!-- Kekuatan -->
+                <div class="mb-8">
+                    <h4 class="text-lg font-medium text-green-700 mb-3">Kekuatan</h4>
+                    <ul class="list-disc pl-5 space-y-2">
+                        {% for strength in name_meaning.kekuatan %}
+                        <li class="text-gray-700">{{ strength }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <!-- Kelemahan -->
+                <div class="mb-8">
+                    <h4 class="text-lg font-medium text-red-700 mb-3">Kelemahan</h4>
+                    <ul class="list-disc pl-5 space-y-2">
+                        {% for weakness in name_meaning.kelemahan %}
+                        <li class="text-gray-700">{{ weakness }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <!-- Makna Energi -->
+                <div class="bg-yellow-50 p-6 rounded-lg">
+                    <h4 class="text-lg font-medium text-yellow-800 mb-2">Makna Energi</h4>
+                    <p class="text-gray-700">{{ name_meaning.makna_energi }}</p>
+                </div>
+            </div>
+
+            <!-- Heart's Desire Section -->
+            {% if heart_desire_number and heart_desire_meaning %}
+            <div id="heart-desire-section" class="border-t border-gray-200 pt-8 mt-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <div class="flex items-center">
+                        <h3 class="text-xl font-semibold text-gray-900">Heart's Desire (Keinginan Hati)</h3>
+                        <button onclick="printSectionById('heart-desire-section', 'Heart\'s Desire')" 
+                                class="print-btn ml-4 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                            </svg>
+                            Print
+                        </button>
+                    </div>
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-pink-100 text-pink-800 mt-2 md:mt-0">
+                        Angka: {{ heart_desire_number }}
+                    </span>
+                </div>
+                
+                <!-- Deskripsi Heart's Desire -->
+                <div class="mb-6">
+                    <h4 class="text-lg font-medium text-gray-900 mb-3">Deskripsi</h4>
+                    {% set _hd_desc = (heart_desire_meaning.deskripsi or '') %}
+                    {% set _hd_norm = _hd_desc.replace('\r\n','\n') %}
+                    {% set _hd_paras = _hd_norm.split('\n\n') %}
+                    {% if _hd_paras|length <= 1 %}
+                        {% set _hd_paras = _hd_norm.split('\n') %}
+                    {% endif %}
+                    {% for _p in _hd_paras %}
+                        {% if _p.strip() %}
+                        <p class="text-gray-700 mb-3">{{ _p.strip() }}</p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <!-- Saran Heart's Desire -->
+                {% if heart_desire_meaning.saran %}
+                <div class="bg-blue-50 p-6 rounded-lg">
+                    <h4 class="text-lg font-medium text-blue-800 mb-2">Saran</h4>
+                    {# Render saran as bullet points, splitting by newline #}
+                    {% set saran_lines = heart_desire_meaning.saran.replace('\r\n','\n').split('\n') %}
+                    <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                        {% for line in saran_lines %}
+                            {% if line.strip() %}
+                            <li>{{ line.strip() }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Personality Number Section -->
+            {% if personality_number and personality_meaning %}
+            <div class="border-t border-gray-200 pt-8 mt-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900">Personality Number (Angka Kepribadian)</h3>
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-purple-100 text-purple-800 mt-2 md:mt-0">
+                        Angka: {{ personality_number }}
+                    </span>
+                </div>
+                
+                <!-- Deskripsi Personality -->
+                <div class="mb-6">
+                    <h4 class="text-lg font-medium text-gray-900 mb-3">Deskripsi</h4>
+                    <p class="text-gray-700">{{ personality_meaning }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="mt-8 border-t border-gray-200 pt-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                            {% for strength in strengths %}
+                            <li>{{ strength }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div>
+                        <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                            {% for challenge in challenges %}
+                            <li>{{ challenge }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 flex gap-3">
+        <a href="{{ url_for('panggilan_form') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">Nama Panggilan</a>
+        <a href="{{ url_for('chaldean_result') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-700">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+            Metode Chaldean
+        </a>
+    </div>
+
+</div>
+{% endblock %}

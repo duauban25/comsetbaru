@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Perhitungan Life Path - Numerologi{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">Hasil Perhitungan Life Path</h1>
+        <p class="text-lg text-gray-600">Jalur Kehidupan Anda Berdasarkan Tanggal Lahir</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div class="p-8">
+            <!-- Header with Name, Birth Date, and Life Path Number -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 bg-gradient-to-r from-indigo-50 via-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-100">
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900">{{ name }}</h2>
+                    <p class="text-gray-600">Tanggal Lahir: {{ birth_date }}</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <span class="inline-flex items-center px-6 py-3 rounded-full text-lg font-bold bg-blue-100 text-blue-800">
+                        Life Path: {{ life_path_number }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Life Path Meaning -->
+            <div class="border-t border-gray-200 pt-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Makna Life Path {{ life_path_number }}</h3>
+                <div class="prose max-w-none">
+                    {% if lp_deskripsi %}
+                        <p class="text-gray-700 mb-4">{{ lp_deskripsi }}</p>
+                    {% endif %}
+                    {% if lp_detail %}
+                        <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                            <h4 class="text-lg font-medium text-blue-800 mb-2">Detail</h4>
+                            <div class="text-gray-700">{{ lp_detail|safe }}</div>
+                        </div>
+                    {% endif %}
+                    {% if lp_kekuatan and lp_kekuatan|length > 0 %}
+                        <div class="mb-6">
+                            <h4 class="text-lg font-medium text-green-700 mb-2">Kekuatan</h4>
+                            <ul class="list-disc pl-5 space-y-1">
+                                {% for item in lp_kekuatan %}
+                                    <li class="text-gray-700">{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {% if lp_tantangan and lp_tantangan|length > 0 %}
+                        <div class="mb-6">
+                            <h4 class="text-lg font-medium text-yellow-700 mb-2">Kelemahan</h4>
+                            <ul class="list-disc pl-5 space-y-1">
+                                {% for item in lp_tantangan %}
+                                    <li class="text-gray-700">{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {% if c4_value is not none or c4_explanation %}
+                        <div class="mb-6">
+                            <h4 class="text-lg font-medium text-red-700 mb-2">Tantangan</h4>
+                            <div class="flex flex-wrap gap-2 mb-2">
+                                {% if c4_value is not none %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">C4: {{ c4_value }}</span>
+                                {% endif %}
+                            </div>
+                            {% if c4_paragraphs and c4_paragraphs|length > 0 %}
+                                {% for para in c4_paragraphs %}
+                                <p class="text-gray-700 mb-3">{{ para }}</p>
+                                {% endfor %}
+                            {% elif c4_explanation %}
+                                <p class="text-gray-700 mb-3">{{ c4_explanation }}</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Penjelasan Hari Lahir (auto show when available) -->
+                    {% if hari_lahir %}
+                    <div class="mt-8 bg-white rounded-xl shadow p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-3">
+                            Penjelasan Hari Lahir ({{ birth_day }})
+                        </h3>
+                        {% set _txt = hari_lahir.replace('\r\n','\n') %}
+                        {% set _paras = _txt.split('\n\n') %}
+                        <div class="text-gray-700 space-y-4">
+                          {% if _paras|length > 1 %}
+                            {% for p in _paras %}
+                              {% if p.strip() %}
+                              <p>{{ p.strip() }}</p>
+                              {% endif %}
+                            {% endfor %}
+                          {% else %}
+                            {% for line in _txt.split('\n') %}
+                              {% if line.strip() %}
+                              <p>{{ line.strip() }}</p>
+                              {% endif %}
+                            {% endfor %}
+                          {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <!-- Personality Traits -->
+            {% if personality_traits %}
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Kekuatan Utama</h3>
+                <ul class="space-y-3">
+                    {% for trait in personality_traits %}
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-700">{{ trait }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Challenges -->
+            {% if challenges %}
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Tantangan</h3>
+                <ul class="space-y-3">
+                    {% for challenge in challenges %}
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-yellow-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-700">{{ challenge }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Career Suggestions -->
+            {% if career_suggestions %}
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Saran Karir</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for career in career_suggestions %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                        {{ career }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- Toggle script removed: panel is always shown when data exists -->

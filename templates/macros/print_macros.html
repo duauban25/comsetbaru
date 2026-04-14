@@ -1,0 +1,34 @@
+<!-- Print Button Macros -->
+
+{% macro print_section_button(section_id, section_title, button_color='gray') %}
+<button onclick="printSectionById('{{ section_id }}', '{{ section_title }}')" 
+        class="print-btn inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ button_color }}-500">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+    </svg>
+    Print
+</button>
+{% endmacro %}
+
+{% macro section_header_with_print(title, section_id, section_title, button_color='gray', badge_text='', badge_color='gray') %}
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+    <div class="flex items-center">
+        <h3 class="text-xl font-semibold text-gray-900">{{ title }}</h3>
+        <div class="ml-4">
+            {{ print_section_button(section_id, section_title, button_color) }}
+        </div>
+    </div>
+    {% if badge_text %}
+    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-{{ badge_color }}-100 text-{{ badge_color }}-800 mt-2 md:mt-0">
+        {{ badge_text }}
+    </span>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro section_header_simple_with_print(title, section_id, section_title, button_color='gray') %}
+<div class="flex justify-between items-center mb-6">
+    <h3 class="text-xl font-semibold text-gray-900">{{ title }}</h3>
+    {{ print_section_button(section_id, section_title, button_color) }}
+</div>
+{% endmacro %}

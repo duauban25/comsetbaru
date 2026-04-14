@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Bridge - Numerologi{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Back Button -->
+    <div class="mb-6">
+        <a href="{{ url_for('calculation_options') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Kembali ke Pilihan Perhitungan
+        </a>
+    </div>
+
+    <!-- Result Card -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">Hasil Perhitungan Bridge</h1>
+                    <p class="text-blue-100">Jembatan antara potensi dan realisasi hidup Anda</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <span class="inline-block bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">
+                        {{ name }} - {{ birth_date }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6 md:p-8">
+            <!-- Bridge Number -->
+            <div class="mb-8 text-center">
+                <div class="inline-flex items-center justify-center space-x-2 mb-4">
+                    <span class="text-4xl font-bold text-blue-700">{{ life_path_number }}</span>
+                    <span class="text-2xl text-gray-400">→</span>
+                    <span class="text-4xl font-bold text-blue-700">{{ bridge_number }}</span>
+                    <span class="text-2xl text-gray-400">→</span>
+                    <span class="text-4xl font-bold text-blue-700">{{ name_number }}</span>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">Jembatan Hidup Anda</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    {{ bridge_description }}
+                </p>
+            </div>
+
+            <!-- Bridge Details -->
+            <div class="bg-blue-50 rounded-xl p-6 mb-8">
+                <h3 class="text-lg font-semibold text-blue-800 mb-4">Penjelasan Bridge</h3>
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-2">Life Path Number: {{ life_path_number }}</h4>
+                        <p class="text-gray-600">{{ life_path_meaning }}</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute left-5 top-0 bottom-0 w-0.5 bg-blue-200"></div>
+                        <div class="relative pl-10 mb-2">
+                            <div class="absolute left-0 top-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <span class="text-blue-600 font-bold">→</span>
+                            </div>
+                            <h4 class="font-medium text-gray-900">Bridge: {{ bridge_label or bridge_number }}</h4>
+                            <p class="text-gray-600 mt-1">
+                                Dihitung dengan mengurangkan nilai yang lebih besar antara Life Path ({{ life_path_number }}) 
+                                dan Name Number ({{ name_number }}).
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-2">Name Number: {{ name_number }}</h4>
+                        <p class="text-gray-600">{{ name_meaning }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interpretation -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Interpretasi Bridge {{ bridge_number }}</h3>
+                <div class="space-y-4">
+                    <div class="p-4 bg-white border border-gray-200 rounded-lg">
+                        <h4 class="font-medium text-blue-700 mb-2">Makna</h4>
+                        <p class="text-gray-700">
+                            <span class="font-medium">Bridge:</span>
+                            {{ bridge_label or bridge_number }} —
+                            {{ bridge_description or bridge_meaning }}
+                        </p>
+                    </div>
+                    <div class="p-4 bg-white border border-gray-200 rounded-lg">
+                        <h4 class="font-medium text-blue-700 mb-2">Tantangan</h4>
+                        <p class="text-gray-700">{{ bridge_challenge }}</p>
+                    </div>
+                    <div class="p-4 bg-white border border-gray-200 rounded-lg">
+                        <h4 class="font-medium text-blue-700 mb-2">Saran</h4>
+                        <p class="text-gray-700">{{ bridge_advice }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to Use -->
+            <div class="bg-gray-50 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Bagaimana Menggunakan Informasi Ini</h3>
+                <div class="space-y-4">
+                    <p class="text-gray-600">
+                        Bridge Number menunjukkan kesenjangan antara potensi bawaan (Life Path) dan bagaimana Anda 
+                        mengekspresikannya (Name Number). Angka ini membantu Anda memahami tantangan yang perlu 
+                        diatasi untuk mewujudkan potensi sejati Anda.
+                    </p>
+                    <p class="text-gray-600">
+                        Gunakan wawasan ini untuk mengenali pola dalam hidup Anda dan mengambil langkah-langkah 
+                        konkret untuk menjembatani kesenjangan antara potensi dan realisasi.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="flex flex-col sm:flex-row justify-between gap-4 mt-8">
+        <a href="{{ url_for('calculation_options') }}" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium text-center transition-colors">
+            Kembali ke Pilihan Perhitungan
+        </a>
+        <a href="{{ url_for('login') }}" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-center transition-colors">
+            Kembali ke Beranda
+        </a>
+    </div>
+</div>
+{% endblock %}

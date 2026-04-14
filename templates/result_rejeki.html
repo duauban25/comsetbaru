@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Analisis Rejeki{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <div class="text-center mb-10">
+    <h1 class="text-3xl font-bold text-gray-900">Hasil Analisis Rejeki</h1>
+    <p class="text-gray-600">Analisis potensi rejeki berdasarkan angka nama Anda</p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow p-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-semibold text-gray-900">{{ name }}</h2>
+        <p class="text-gray-600">Tanggal Lahir: {{ birth_date }}</p>
+      </div>
+      <div class="mt-4 md:mt-0 flex flex-wrap gap-2 items-center">
+        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800">Angka Rejeki: {{ R if R is defined else number }}</span>
+        {% if P is defined %}
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">P: {{ P }}</span>
+        {% endif %}
+        {% if Q is defined %}
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Q: {{ Q }}</span>
+        {% endif %}
+        {% if pq is defined and pq %}
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">P&amp;Q: {{ pq }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if false %}
+    <!-- Debug Variables (collapsible) -->
+    <details class="mb-6">
+      <summary class="cursor-pointer select-none text-sm text-gray-600 hover:text-gray-800">Lihat variabel (debug)</summary>
+      <div class="mt-3 text-sm text-gray-700 space-y-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div><span class="font-semibold">number/rejeki:</span> {{ number }}</div>
+          <div><span class="font-semibold">P:</span> {{ P }}</div>
+          <div><span class="font-semibold">Q:</span> {{ Q }}</div>
+          <div><span class="font-semibold">pq:</span> {{ pq }}</div>
+          <div class="md:col-span-2"><span class="font-semibold">deskripsi (R):</span> {{ deskripsi }}</div>
+          <div class="md:col-span-2"><span class="font-semibold">deskripsi_p (P):</span> {{ deskripsi_p }}</div>
+          <div class="md:col-span-2"><span class="font-semibold">deskripsi_q (Q):</span> {{ deskripsi_q }}</div>
+          <div class="md:col-span-2"><span class="font-semibold">deskripsi_pq:</span> {{ deskripsi_pq }}</div>
+        </div>
+        {% if values %}
+        <div class="mt-2">
+          <div class="font-semibold mb-1">Values (A..Z, dsb)</div>
+          <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 text-xs">
+            {% for k, v in values.items() %}
+              <div class="px-2 py-1 bg-gray-50 rounded border border-gray-200"><span class="font-semibold">{{ k }}:</span> {{ v }}</div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </details>
+    {% endif %}
+
+    <div class="space-y-8">
+      <!-- Main: R (primary number) description always shown -->
+      <div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">Deskripsi</h3>
+        <p class="text-gray-700">{{ deskripsi }}</p>
+      </div>
+
+      <!-- Combined P&Q section (single merged explanation) -->
+      {% if pair_deskripsi %}
+      <div class="border-t pt-6">
+        <h3 class="text-xl font-semibold text-indigo-800 mb-2">{{ pair_title or 'Deskripsi P&Q' }}</h3>
+        <p class="text-gray-700">{{ pair_deskripsi }}</p>
+      </div>
+      {% endif %}
+
+      {% if kekuatan %}
+      <div>
+        <h3 class="text-xl font-semibold text-green-800 mb-2">Kekuatan</h3>
+        <ul class="list-disc pl-5 space-y-1">
+          {% for item in kekuatan %}<li class="text-gray-700">{{ item }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if kelemahan %}
+      <div>
+        <h3 class="text-xl font-semibold text-yellow-800 mb-2">Tantangan</h3>
+        <ul class="list-disc pl-5 space-y-1">
+          {% for item in kelemahan %}<li class="text-gray-700">{{ item }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+
+      {% if saran %}
+      <div class="border-t pt-6">
+        <h3 class="text-xl font-semibold text-indigo-800 mb-2">Saran</h3>
+        <p class="text-gray-700">{{ saran }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="mt-10 flex gap-3">
+      <a href="{{ url_for('login') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">Ubah Data</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

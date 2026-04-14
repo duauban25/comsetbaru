@@ -1,0 +1,487 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Arah Sukses - {{ name or 'Nama Tidak Tersedia' }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+  .direction-card {
+    transition: all 0.3s ease;
+  }
+  .direction-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
+  .best-direction {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2), 0 2px 4px -1px rgba(79, 70, 229, 0.06);
+  }
+  .number-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: #4f46e5;
+    background-color: #eef2ff;
+    margin: 0 0.25rem 0.5rem 0;
+  }
+  .direction-score {
+    transition: all 0.2s ease;
+  }
+  .direction-score:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Hasil Arah Sukses</h1>
+    <p class="text-gray-600">Analisis arah keberuntungan berdasarkan tanggal lahir Anda</p>
+  </div>
+
+  <!-- User Info -->
+  <div class="bg-white rounded-xl shadow p-6 mb-8 direction-card">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900">{{ name or 'Nama Tidak Tersedia' }}</h2>
+        <p class="text-gray-600">Tanggal Lahir: {{ birth_date or 'Tanggal Lahir Tidak Tersedia' }}</p>
+      </div>
+      <div class="mt-4 md:mt-0">
+        <a href="{{ url_for('input_data') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Kembali ke Menu Utama
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Left: Highlight & Top 3 -->
+    <div class="space-y-6">
+      <!-- Best Direction -->
+      <div class="best-direction">
+        <div class="text-center">
+          <p class="text-white text-opacity-90 mb-2">Arah Keberuntungan Anda</p>
+          {% if result and result.best_direction %}
+          <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">{{ result.best_direction }}</h2>
+          {% endif %}
+          {% if result and result.best_score %}
+          <div class="inline-block bg-white bg-opacity-20 text-white text-sm font-semibold px-4 py-1 rounded-full">
+            Skor: {{ result.best_score }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if result and result.deskripsi %}
+      <div class="bg-white rounded-xl shadow p-6 direction-card">
+        <h3 class="text-xl font-semibold text-gray-800 mb-3">Penjelasan Arah Terbaik</h3>
+        <div class="text-gray-700 leading-relaxed">{{ result.deskripsi|fmt|safe }}</div>
+      </div>
+      {% endif %}
+
+      <!-- Top 3 recommendations -->
+      <div class="bg-white rounded-xl shadow p-6 direction-card">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold text-gray-800">3 Rekomendasi Teratas</h3>
+          <span class="text-xs px-2 py-1 rounded-full bg-indigo-50 text-indigo-600">Urutan terbaik</span>
+        </div>
+        <div class="space-y-3">
+          {% if result and result.direction_scores %}
+            {% for item in result.direction_scores[:3] %}
+            <div class="flex items-center justify-between p-3 rounded-lg border border-gray-100 bg-gray-50">
+              <div class="flex items-center gap-3">
+                <!-- Icon -->
+                <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3a1 1 0 00.293.707l2 2a1 1 0 101.414-1.414L11 9.586V7z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+                <div>
+                  <div class="font-semibold text-gray-900">{{ item.name }}</div>
+                  {% set caption = 'Ini adalah lokasi Sukses Anda' %}
+                  {% if item.score == 7 %}
+                    {% set caption = 'Ini adalah lokasi kekayaan' %}
+                  {% elif item.score == 6 %}
+                    {% set caption = 'Ini adalah lokasi yang memberi banyak relasi' %}
+                  {% endif %}
+                  <div class="text-xs text-gray-500">{{ caption }}</div>
+                </div>
+              </div>
+              <div class="text-indigo-700 font-bold text-lg">{{ item.score }}</div>
+            </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: All Direction Scores -->
+    <div class="space-y-6">
+      
+      <!-- Direction Scores -->
+      <div class="bg-white rounded-xl shadow p-6 direction-card">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold text-gray-800">Skor Semua Arah</h3>
+          <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">Semakin besar semakin baik</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {% if result and result.direction_scores %}
+            {% for direction in result.direction_scores %}
+              {% set direction_name = direction.name %}
+              <div class="direction-score p-4 rounded-lg border flex items-center justify-between
+                          {% if direction_name == result.best_direction %} border-indigo-300 bg-indigo-50 {% else %} border-gray-200 bg-white {% endif %}">
+                <div class="flex items-center gap-3">
+                  <span class="inline-flex items-center justify-center w-8 h-8 rounded-md
+                                {% if direction_name == result.best_direction %} bg-indigo-200 text-indigo-800 {% else %} bg-gray-100 text-gray-600 {% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 3a1 1 0 01.894.553l2.382 4.764 5.26.764a1 1 0 01.554 1.705l-3.806 3.708.898 5.236A1 1 0 0115.3 21l-4.7-2.47L5.9 21a1 1 0 01-1.45-1.055l.898-5.236L1.542 10.786a1 1 0 01.554-1.705l5.26-.764L9.738 3.553A1 1 0 0110 3z" />
+                    </svg>
+                  </span>
+                  <span class="font-medium {% if direction_name == result.best_direction %} text-indigo-900 {% else %} text-gray-800 {% endif %}">{{ direction_name }}</span>
+                </div>
+                <span class="text-lg font-bold {% if direction_name == result.best_direction %} text-indigo-700 {% else %} text-gray-700 {% endif %}">{{ direction.score }}</span>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Calculation Steps (hidden) - DISABLED -->
+        <div class="bg-white rounded-xl shadow p-6 direction-card hidden">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-gray-800">Langkah Perhitungan</h3>
+            <button onclick="toggleSteps()" class="text-sm text-indigo-600 hover:text-indigo-800 flex items-center">
+              <span id="toggleText">Tampilkan</span>
+              <svg id="toggleIcon" class="w-4 h-4 ml-1 transform -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+          <div id="stepsContainer" class="space-y-2 hidden">
+            {% if result and result.steps %}
+              {% for step in result.steps %}
+                <div class="p-3 bg-gray-50 rounded border border-gray-100 text-sm">
+                  {% if '=' in step %}
+                    {% set parts = step.split('=') %}
+                    <span class="text-gray-700">{{ parts[0] }}=</span>
+                    <span class="font-semibold text-indigo-600">{{ parts[1] if parts|length > 1 else '' }}</span>
+                  {% else %}
+                    <span class="font-medium text-gray-800">{{ step }}</span>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Papan Pythagoras Section -->
+  {% if pythagoras_data and 'error' not in pythagoras_data %}
+  <div class="mt-8">
+    <div class="bg-white rounded-xl shadow p-6 direction-card">
+      <h3 class="text-xl font-semibold text-gray-800 mb-6">Papan Pythagoras</h3>
+      <p class="text-gray-600 mb-6">Analisis karakter berdasarkan distribusi huruf dalam nama Anda</p>
+      
+      <!-- Pythagoras Chart -->
+      <div class="grid grid-cols-4 gap-2 max-w-md mx-auto mb-6">
+        <!-- Header Row -->
+        <div class="text-center font-medium text-gray-700 text-sm"></div>
+        <div class="text-center font-medium text-gray-700 text-sm">Self</div>
+        <div class="text-center font-medium text-gray-700 text-sm">Community</div>
+        <div class="text-center font-medium text-gray-700 text-sm">World</div>
+        
+        <!-- Mind Row -->
+        <div class="text-center font-medium text-gray-700 text-sm bg-blue-50 p-2 rounded">Mind</div>
+        <div class="bg-blue-100 p-4 rounded text-center">
+          <div class="text-2xl font-bold text-blue-800">{{ pythagoras_data.chart.mind_self }}</div>
+          <div class="text-xs text-blue-600">3</div>
+        </div>
+        <div class="bg-blue-100 p-4 rounded text-center">
+          <div class="text-2xl font-bold text-blue-800">{{ pythagoras_data.chart.mind_community }}</div>
+          <div class="text-xs text-blue-600">6</div>
+        </div>
+        <div class="bg-blue-100 p-4 rounded text-center">
+          <div class="text-2xl font-bold text-blue-800">{{ pythagoras_data.chart.mind_world }}</div>
+          <div class="text-xs text-blue-600">9</div>
+        </div>
+        
+        <!-- Soul Row -->
+        <div class="text-center font-medium text-gray-700 text-sm bg-green-50 p-2 rounded">Soul</div>
+        <div class="bg-green-100 p-4 rounded text-center">
+          <div class="text-2xl font-bold text-green-800">{{ pythagoras_data.chart.soul_self }}</div>
+          <div class="text-xs text-green-600">2</div>
+        </div>
+        <div class="bg-green-100 p-4 rounded text-center">
+          <div class="text-2xl font-bold text-green-800">{{ pythagoras_data.chart.soul_community }}</div>
+          <div class="text-xs text-green-600">5</div>
+        </div>
+        <div class="bg-green-100 p-4 rounded text-center">
+          <div class="text-2xl font-bold text-green-800">{{ pythagoras_data.chart.soul_world }}</div>
+          <div class="text-xs text-green-600">8</div>
+        </div>
+        
+        <!-- Body Row -->
+        <div class="text-center font-medium text-gray-700 text-sm bg-orange-50 p-2 rounded">Body</div>
+        <div class="bg-orange-100 p-4 rounded text-center">
+          <div class="text-2xl font-bold text-orange-800">{{ pythagoras_data.chart.body_self }}</div>
+          <div class="text-xs text-orange-600">1</div>
+        </div>
+        <div class="bg-orange-100 p-4 rounded text-center">
+          <div class="text-2xl font-bold text-orange-800">{{ pythagoras_data.chart.body_community }}</div>
+          <div class="text-xs text-orange-600">4</div>
+        </div>
+        <div class="bg-orange-100 p-4 rounded text-center">
+          <div class="text-2xl font-bold text-orange-800">{{ pythagoras_data.chart.body_world }}</div>
+          <div class="text-xs text-orange-600">7</div>
+        </div>
+      </div>
+      
+      <!-- Summary Totals -->
+      <div class="space-y-4 mb-6">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="font-medium text-gray-800 mb-3">Aspek Kehidupan</h4>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span class="text-blue-700">Mind (Pikiran):</span>
+              <span class="font-medium">{{ pythagoras_data.totals.mind_total }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-green-700">Soul (Jiwa):</span>
+              <span class="font-medium">{{ pythagoras_data.totals.soul_total }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-orange-700">Body (Fisik):</span>
+              <span class="font-medium">{{ pythagoras_data.totals.body_total }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="font-medium text-gray-800 mb-3">Area Fokus</h4>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span class="text-gray-700">Self (Diri):</span>
+              <span class="font-medium">{{ pythagoras_data.totals.self_total }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-700">Community (Komunitas):</span>
+              <span class="font-medium">{{ pythagoras_data.totals.community_total }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-700">World (Dunia):</span>
+              <span class="font-medium">{{ pythagoras_data.totals.world_total }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Position Descriptions -->
+      {% if pythagoras_data.descriptions %}
+      <div class="space-y-3 mb-6">
+        <h4 class="font-medium text-gray-800 mb-3">Interpretasi Posisi</h4>
+        
+        {% for position, description in pythagoras_data.descriptions.items() %}
+          {% if description and description != 'Deskripsi untuk ' + position + ' belum tersedia' %}
+            {% set count = pythagoras_data.chart[position] %}
+            {% if count > 0 %}
+              <div class="bg-white border-l-4 
+                {% if 'mind' in position %}border-blue-400{% endif %}
+                {% if 'soul' in position %}border-green-400{% endif %}
+                {% if 'body' in position %}border-orange-400{% endif %}
+                p-3 rounded-r">
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 mr-3">
+                    <div class="w-8 h-8 rounded-full 
+                      {% if 'mind' in position %}bg-blue-100 text-blue-800{% endif %}
+                      {% if 'soul' in position %}bg-green-100 text-green-800{% endif %}
+                      {% if 'body' in position %}bg-orange-100 text-orange-800{% endif %}
+                      flex items-center justify-center text-sm font-bold">
+                      {{ count }}
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h5 class="font-medium text-gray-900 mb-1">
+                      {% if position == 'mind_self' %}Mind - Self (Pikiran Diri)
+                      {% elif position == 'mind_community' %}Mind - Community (Pikiran Komunitas)
+                      {% elif position == 'mind_world' %}Mind - World (Pikiran Dunia)
+                      {% elif position == 'soul_self' %}Soul - Self (Jiwa Diri)
+                      {% elif position == 'soul_community' %}Soul - Community (Jiwa Komunitas)
+                      {% elif position == 'soul_world' %}Soul - World (Jiwa Dunia)
+                      {% elif position == 'body_self' %}Body - Self (Fisik Diri)
+                      {% elif position == 'body_community' %}Body - Community (Fisik Komunitas)
+                      {% elif position == 'body_world' %}Body - World (Fisik Dunia)
+                      {% endif %}
+                    </h5>
+                    <p class="text-sm text-gray-700">{{ description }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+      
+      <!-- Angka Terisolasi Section -->
+      {% if pythagoras_data.isolated_numbers and pythagoras_data.isolated_numbers.has_isolated %}
+      <div class="mb-6">
+        <h4 class="font-medium text-gray-800 mb-3">Angka Terisolasi</h4>
+        <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r mb-4">
+          <div class="flex items-center mb-2">
+            <div class="flex-shrink-0">
+              <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h5 class="text-sm font-medium text-red-800">
+                Ditemukan {{ pythagoras_data.isolated_numbers.total_isolated }} angka terisolasi
+              </h5>
+              <p class="text-sm text-red-700">
+                Angka-angka berikut terisolasi dari angka di sekitarnya dan memerlukan perhatian khusus.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="space-y-3">
+          {% for isolated in pythagoras_data.isolated_numbers.isolated_list %}
+          <div class="bg-white border border-red-200 rounded-lg p-4">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 mr-3">
+                <div class="w-10 h-10 bg-red-100 text-red-800 rounded-full flex items-center justify-center font-bold text-lg">
+                  {{ isolated.number }}
+                </div>
+              </div>
+              <div class="flex-1">
+                <h5 class="font-medium text-gray-900 mb-1">
+                  Angka {{ isolated.number }} Terisolasi 
+                  <span class="text-sm text-gray-500">({{ isolated.count }} kali muncul)</span>
+                </h5>
+                <p class="text-sm text-gray-700">{{ isolated.description }}</p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      
+      <!-- Angka Berderet Section -->
+      {% if pythagoras_data.sequential_patterns and pythagoras_data.sequential_patterns.has_patterns %}
+      <div class="mb-6">
+        <h4 class="font-medium text-gray-800 mb-3">Angka Berderet</h4>
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r mb-4">
+          <div class="flex items-center mb-2">
+            <div class="flex-shrink-0">
+              <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h5 class="text-sm font-medium text-blue-800">
+                Ditemukan {{ pythagoras_data.sequential_patterns.total_patterns }} pola berderet
+              </h5>
+              <p class="text-sm text-blue-700">
+                Pola-pola berikut menunjukkan keseimbangan atau ketiadaan dalam aspek tertentu kehidupan Anda.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {% for pattern in pythagoras_data.sequential_patterns.patterns_list %}
+          <div class="bg-white border 
+            {% if pattern.status == 'deret' %}border-green-200{% else %}border-gray-200{% endif %}
+            rounded-lg p-4">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 mr-3">
+                <div class="w-10 h-10 
+                  {% if pattern.status == 'deret' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-600{% endif %}
+                  rounded-full flex items-center justify-center font-bold text-sm">
+                  {% if pattern.status == 'deret' %}✓{% else %}∅{% endif %}
+                </div>
+              </div>
+              <div class="flex-1">
+                <h5 class="font-medium text-gray-900 mb-1">
+                  {{ pattern.name }}
+                  <span class="text-xs px-2 py-1 rounded-full ml-2
+                    {% if pattern.status == 'deret' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-600{% endif %}">
+                    {{ pattern.status|title }}
+                  </span>
+                </h5>
+                <div class="text-xs text-gray-500 mb-2">
+                  Posisi: {{ pattern.positions|join(', ') }} | 
+                  Nilai: {{ pattern['values']|join(', ') }}
+                </div>
+                <p class="text-sm text-gray-700">{{ pattern.description }}</p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      
+      <!-- Letter Breakdown -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h4 class="font-medium text-gray-800 mb-3">Distribusi Huruf</h4>
+        <div class="text-sm text-gray-600">
+          <strong>{{ pythagoras_data.name }}</strong> →
+          {% for letter, value in pythagoras_data.letter_breakdown.items() %}
+            <span class="inline-block mx-1 px-2 py-1 bg-white rounded">{{ letter }}={{ value }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Navigation Buttons -->
+  <div class="mt-8 flex justify-center gap-4">
+    <a href="{{ url_for('login') }}" class="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Hitung Lagi
+    </a>
+    <a href="{{ url_for('calculation_options') }}" class="inline-flex items-center px-6 py-3 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      Menu Utama
+    </a>
+  </div>
+</div>
+
+<script>
+  // toggleSteps function disabled - calculation steps section is hidden
+  function toggleSteps() {
+    // Function disabled - calculation steps are not shown
+    return false;
+  }
+  
+  // JavaScript for calculation steps disabled - section is hidden
+  document.addEventListener('DOMContentLoaded', function() {
+    // Calculation steps section is permanently hidden
+    console.log('Calculation steps section disabled');
+  });
+</script>
+{% endblock %}
