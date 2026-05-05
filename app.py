@@ -642,8 +642,7 @@ def password_reset_request():
         finally:
             db.close()
         if token:
-            port = int(os.environ.get('PORT', 5003))
-            reset_link = f"http://127.0.0.1:{port}/password_reset/{token}"
+            reset_link = url_for('password_reset', token=token, _external=True)
             print(f"[DEV] Password reset link for {email}: {reset_link}")
             flash(f'Link reset (dev): {reset_link}', 'info')
         else:
