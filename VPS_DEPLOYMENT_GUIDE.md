@@ -3,7 +3,7 @@
 ## Prerequisites
 - Ubuntu 24.04 LTS VPS
 - SSH access to VPS
-- GitHub repository: https://github.com/duauban25/numerologi
+- GitHub repository: https://github.com/duauban25/comsetbaru
 
 ## Quick Deployment (Automated)
 
@@ -66,7 +66,7 @@ sudo chown -R $USER:$USER /var/www/numerology
 ### 4. Clone repository
 ```bash
 cd /var/www/numerology
-git clone https://github.com/duauban25/numerologi.git .
+git clone https://github.com/duauban25/comsetbaru.git .
 ```
 
 ### 5. Setup virtual environment
