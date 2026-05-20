@@ -1,4 +1,6 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_from_directory
 from flask_wtf import FlaskForm
 from wtforms import StringField
@@ -643,10 +645,18 @@ def password_reset_request():
             db.close()
         if token:
             reset_link = url_for('password_reset', token=token, _external=True)
-            print(f"[DEV] Password reset link for {email}: {reset_link}")
-            flash(f'Link reset (dev): {reset_link}', 'info')
-        else:
-            flash('Jika email terdaftar, link reset telah dikirim.', 'info')
+            subject = "Reset Password Anda"
+            body = (
+                f"Halo,\n\n"
+                f"Kami menerima permintaan untuk mereset password akun Anda.\n"
+                f"Silakan klik tautan berikut untuk mereset password Anda:\n"
+                f"{reset_link}\n\n"
+                f"Tautan ini berlaku selama 60 menit.\n"
+                f"Jika Anda tidak meminta reset password, silakan abaikan email ini.\n"
+            )
+            send_email(email, subject, body)
+        
+        flash('Jika email terdaftar, link untuk mereset password telah dikirim ke email Anda.', 'info')
         return redirect(url_for('password_reset_request'))
     return render_template('password_reset_request.html')
 
@@ -658,6 +668,12 @@ def password_reset(token):
         if not user:
             flash('Token tidak valid', 'error')
             return redirect(url_for('login'))
+        
+        # Periksa apakah token sudah kedaluwarsa
+        if user.reset_expires_at and user.reset_expires_at < datetime.utcnow():
+            flash('Token reset password telah kedaluwarsa', 'error')
+            return redirect(url_for('login'))
+            
         if request.method == 'POST':
             pw1 = request.form.get('password', '')
             pw2 = request.form.get('password_confirm', '')
